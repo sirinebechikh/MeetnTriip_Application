@@ -93,6 +93,7 @@
             "allow-contrib": false,
             "require": "6.4.*"
         }
+ 
     },
     "require-dev": {
         "phpunit/phpunit": "^9.5",
@@ -104,4 +105,7 @@
         "symfony/stopwatch": "6.4.*",
         "symfony/web-profiler-bundle": "6.4.*"
     }
+    
+ 
+
 }

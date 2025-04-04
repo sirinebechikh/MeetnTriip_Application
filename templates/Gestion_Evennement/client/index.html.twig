@@ -1,0 +1,227 @@
+{% extends 'Gestion_Evennement/base.html.twig' %}
+
+{% block title %}Manage Events{% endblock %}
+
+{% block body %}
+ 
+<div class="container">
+    <h1 class="my-4">Manage Events</h1>
+
+    <!-- Affichage des messages flash -->
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <strong>Success!</strong> {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+
+    {% for message in app.flashes('error') %}
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <strong>Error!</strong> {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+
+    <!-- Ajout d'un événement -->
+    <button type="button" class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#eventModal">
+        Add Event
+    </button>
+
+    <!-- Modal pour Ajouter un Nouveau Event -->
+    <div class="modal fade" id="eventModal" tabindex="-1" aria-labelledby="eventModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="eventModalLabel">New Event</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-container">
+
+                    <!-- Ajout du logo -->
+    <div class="form-logo">
+        <img  src="{{ asset('uploads/events/logo.png') }}"  alt="MeetNTrip Logo">
+    </div>
+                    {{ form_start(form, {'attr': {'class': 'form-container'}}) }}
+                    <div class="form-group">
+                        {{ form_label(form.nom) }}
+                        {{ form_widget(form.nom, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                
+                    <div class="form-group">
+                        {{ form_label(form.type) }}
+                        {{ form_widget(form.type, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                
+                    <div class="form-group">
+                        {{ form_label(form.nombreInvite) }}
+                        {{ form_widget(form.nombreInvite, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                
+                    <div class="form-group">
+                        {{ form_label(form.dateDebut) }}
+                        {{ form_widget(form.dateDebut, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                
+                    <div class="form-group">
+                        {{ form_label(form.dateFin) }}
+                        {{ form_widget(form.dateFin, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                
+                    <div class="form-group">
+                        {{ form_label(form.description) }}
+                        {{ form_widget(form.description, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                
+                    <div class="form-group">
+                        {{ form_label(form.lieuEvenement) }}
+                        {{ form_widget(form.lieuEvenement, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                
+                    <div class="form-group">
+                        {{ form_label(form.budgetPrevu) }}
+                        {{ form_widget(form.budgetPrevu, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                
+                    <div class="form-group">
+                        {{ form_label(form.activities) }}
+                        {{ form_widget(form.activities, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                
+                    <div class="form-group">
+                        {{ form_label(form.imagePath) }}
+                        {{ form_widget(form.imagePath, {'attr': {'class': 'form-control-file'}}) }}
+                    </div>
+                
+                    <button type="submit" class="btn btn-primary">Save</button>
+                {{ form_end(form) }}
+            </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Affichage des événements -->
+    <div class="row">
+        {% for event in evenements %}
+            <div class="col-md-4">
+                <div class="card bg-gradient-success card-img-holder text-white">
+                    {% if event.imagePath %}
+                        <img src="{{ asset('uploads/events/' ~ event.imagePath) }}" class="card-img-top" alt="Event Image" style="height: 200px; object-fit: cover;">
+                    {% else %}
+                        <div class="card-img-top bg-secondary" style="height: 200px; display: flex; align-items: center; justify-content: center;">
+                            <span class="text-white">No Image</span>
+                        </div>
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ event.nom }}</h5>
+                        <p class="card-text">{{ event.description|slice(0, 100) ~ (event.description|length > 100 ? '...' : '') }}</p>
+                        <p><strong>Type:</strong> {{ event.type }}</p>
+                        <p><strong>Location:</strong> {{ event.lieuEvenement }}</p>
+                        <p><strong>Budget:</strong> {{ event.budgetPrevu }} $</p>
+
+                    
+
+                        <!-- Bouton Modifier l'événement -->
+                        <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#editEventModal{{ event.id }}">
+                            Edit
+                        </button>
+
+                        <!-- Formulaire de suppression -->
+                        <form action="{{ path('client_evenement_delete', {'id': event.id}) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this event?');">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ event.id) }}">
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </form>
+                         <!-- Bouton pour la demande de sponsoring -->
+                        <a href="{{ path('app_d_sponsor', {'id': event.id}) }}" class="btn btn-primary">
+                            Faire une demande de Sponsoring
+                        </a>
+                        
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal pour modifier l'événement -->
+            <div class="modal fade" id="editEventModal{{ event.id }}" tabindex="-1" aria-labelledby="editEventModalLabel{{ event.id }}" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="editEventModalLabel{{ event.id }}">Edit Event</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-container">
+                                <!-- Ajout du logo -->
+                                <div class="form-logo">
+                                    <img src="{{ asset('uploads/events/logo.png') }}" alt="MeetNTrip Logo">
+                                </div>
+                            
+                                {{ form_start(editForms[event.id], {
+                                    'action': path('client_evenement_edit', {'id': event.id}),
+                                    'method': 'POST',
+                                    'attr': {'enctype': 'multipart/form-data', 'class': 'form-container'}
+                                }) }}
+                            
+                                <div class="form-group">
+                                    {{ form_label(editForms[event.id].nom) }}
+                                    {{ form_widget(editForms[event.id].nom, {'attr': {'class': 'form-control'}}) }}
+                                </div>
+                            
+                                <div class="form-group">
+                                    {{ form_label(editForms[event.id].type) }}
+                                    {{ form_widget(editForms[event.id].type, {'attr': {'class': 'form-control'}}) }}
+                                </div>
+                            
+                                <div class="form-group">
+                                    {{ form_label(editForms[event.id].nombreInvite) }}
+                                    {{ form_widget(editForms[event.id].nombreInvite, {'attr': {'class': 'form-control'}}) }}
+                                </div>
+                            
+                                <div class="form-group">
+                                    {{ form_label(editForms[event.id].dateDebut) }}
+                                    {{ form_widget(editForms[event.id].dateDebut, {'attr': {'class': 'form-control'}}) }}
+                                </div>
+                            
+                                <div class="form-group">
+                                    {{ form_label(editForms[event.id].dateFin) }}
+                                    {{ form_widget(editForms[event.id].dateFin, {'attr': {'class': 'form-control'}}) }}
+                                </div>
+                            
+                                <div class="form-group">
+                                    {{ form_label(editForms[event.id].description) }}
+                                    {{ form_widget(editForms[event.id].description, {'attr': {'class': 'form-control'}}) }}
+                                </div>
+                            
+                                <div class="form-group">
+                                    {{ form_label(editForms[event.id].lieuEvenement) }}
+                                    {{ form_widget(editForms[event.id].lieuEvenement, {'attr': {'class': 'form-control'}}) }}
+                                </div>
+                            
+                                <div class="form-group">
+                                    {{ form_label(editForms[event.id].budgetPrevu) }}
+                                    {{ form_widget(editForms[event.id].budgetPrevu, {'attr': {'class': 'form-control'}}) }}
+                                </div>
+                            
+                                <div class="form-group">
+                                    {{ form_label(editForms[event.id].activities) }}
+                                    {{ form_widget(editForms[event.id].activities, {'attr': {'class': 'form-control'}}) }}
+                                </div>
+                            
+                                <div class="form-group">
+                                    {{ form_label(editForms[event.id].imagePath) }}
+                                    {{ form_widget(editForms[event.id].imagePath, {'attr': {'class': 'form-control-file'}}) }}
+                                </div>
+                            
+                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                            
+                                {{ form_end(editForms[event.id]) }}
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    
+{% endblock %}
