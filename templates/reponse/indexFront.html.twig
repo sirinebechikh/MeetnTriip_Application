@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+
+{% block body %}
+
+    <!-- Tableau des réponses aux réclamations -->
+    {% for response in Reponse %}
+    <div class="card mb-3">
+        <div class="card-body">
+            <h5 class="card-title">Nom complet: {{ response.fullname }}</h5>
+            <h6 class="card-subtitle mb-2 text-muted">Réclamation: {{ response.reclamations.commentaire }}</h6>
+            <h7 class="card-title">Reponse : {{ response.commentaire }}</h7>
+
+        </div>
+    </div>
+    {% endfor %}
+
+    <div class="pagination">
+        {{ knp_pagination_render(Reponse) }}
+    </div>
+</div>
+{% endblock %}

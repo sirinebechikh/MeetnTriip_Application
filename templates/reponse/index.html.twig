@@ -1,0 +1,27 @@
+{% extends 'admin.html.twig' %}
+
+
+{% block body %}
+
+    <!-- Tableau des réponses aux réclamations -->
+    {% for response in Reponse %}
+    <div class="card mb-3">
+        <div class="card-body">
+            <h5 class="card-title">Nom complet: {{ response.fullname }}</h5>
+            <h7 class="card-title">Reponse : {{ response.commentaire }}</h7>
+
+            <h6 class="card-subtitle mb-2 text-muted">Réclamation: {{ response.reclamations.commentaire }}</h6>
+            <div class="btn-group" role="group" aria-label="Actions">
+                <a class="btn cur-p btn-danger" href="{{ path('delete_adh', {'id': response.idReponse}) }}">Supprimer</a>
+                <a class="btn cur-p btn-success" href="{{ path('update_adh', {'id': response.idReponse}) }}">Mettre à jour</a>
+        
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+    <div class="pagination">
+        {{ knp_pagination_render(Reponse) }}
+    </div>
+</div>
+{% endblock %}

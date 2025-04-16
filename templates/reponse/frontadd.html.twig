@@ -1,0 +1,50 @@
+
+
+{% extends 'admin.html.twig' %}
+
+{% block title %}Ajouter reponse{% endblock %}
+
+{% block body %}
+    {% form_theme form 'bootstrap_4_layout.html.twig' %}
+    
+    <div class="content-page">
+        <div class="content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="page-title-box">
+                            <div class="page-title-right">
+                                <ol class="breadcrumb m-0">
+                                    <li class="breadcrumb-item">
+                                        <a href="javascript: void(0);">Admin</a>
+                                    </li>
+                                    <li class="breadcrumb-item">
+                                        <a href="javascript: void(0);">Formulaire</a>
+                                    </li>
+                                    <li class="breadcrumb-item active">Reclamations</li>
+                                </ol>
+                            </div>
+                            <h4 class="page-title">Formulaire d'ajout reclamations</h4>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Contenu du formulaire -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Ajouter votre eponse</h5>
+                                {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+                                    <!-- Contenu de votre formulaire ici -->
+                                {{ form_end(form) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Fin contenu du formulaire -->
+                
+            </div>
+        </div>
+    </div>
+{% endblock %}

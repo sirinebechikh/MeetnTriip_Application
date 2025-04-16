@@ -1,0 +1,7 @@
+#index:
+#    path: /
+#    controller: App\Controller\DefaultController::index
+# config/routes.yaml
+generate_pdf:
+    path: /generate_pdf
+    controller: App\Controller\ReclamationController::generatePdfAction
