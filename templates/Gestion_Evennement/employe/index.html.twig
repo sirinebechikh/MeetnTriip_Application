@@ -1,0 +1,95 @@
+{% extends 'Gestion_Evennement/base.html.twig' %}
+
+{% block body %}
+<h2>Affectation des employés pour l'événement : {{ event.nom }}</h2>
+
+<!-- Liste des employés disponibles -->
+<table id="available-employees" class="table table-bordered table-striped">
+    <thead class="table-dark">
+        <tr><th>Nom</th><th>Email</th><th>Action</th></tr>
+    </thead>
+    <tbody>
+        {% for emp in employees %}
+            <tr data-id="{{ emp.id }}">
+                <td>{{ emp.nom }}</td>
+                <td>{{ emp.email }}</td>
+                <td><button type="button" class="btn btn-success add-btn">➕ Ajouter</button></td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<hr>
+
+<!-- Tableau des employés affectés -->
+<form method="post" action="{{ path('submit_employee_assignments', { id: event.id }) }}">
+    <table id="selected-employees" class="table table-hover">
+        <thead class="table-primary">
+            <tr>
+                <th>Nom</th>
+                <th>Rôle</th>
+                <th>Status</th>
+                 <th>Création</th>  <!-- Colonne pour createdAt -->
+                <th>Dernière Mise à Jour</th>  <!-- Colonne pour updatedAt -->
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {# Les lignes des employés affectés seront ajoutées dynamiquement ici #}
+        </tbody>
+    </table>
+
+    <button type="submit" class="btn btn-primary mt-3">✅ Valider</button>
+</form>
+
+<!-- Script pour ajout dynamique -->
+<script>
+    const roles = ['Photographe', 'Sécurité', 'Serveur', 'Coordinateur', 'Animateur'];
+    const statuses = ['Assigned', 'In Progress', 'Done'];
+
+    document.querySelectorAll('.add-btn').forEach(btn => {
+        btn.addEventListener('click', function () {
+            const row = this.closest('tr');
+            const id = row.dataset.id;
+            const nom = row.children[0].textContent;
+            row.remove(); // Supprimer de la liste dispo
+
+            const roleOptions = roles.map(role => `<option value="${role}">${role}</option>`).join('');
+            const statusOptions = statuses.map(s => `<option value="${s}">${s}</option>`).join('');
+
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td>${nom}<input type="hidden" name="assignments[][employeeId]" value="${id}"></td>
+                <td>
+                    <select name="assignments[][role]" class="form-select" required>
+                        <option value="" disabled selected>Choisir un rôle</option>
+                        ${roleOptions}
+                    </select>
+                </td>
+                <td>
+                    <select name="assignments[][status]" class="form-select" required>
+                        ${statusOptions}
+                    </select>
+                </td>
+                 <td><input type="text" name="assignments[][createdAt]" value="{{ "now"|date('Y-m-d H:i:s') }}" class="form-control" readonly></td>  <!-- createdAt -->
+                <td><input type="text" name="assignments[][updatedAt]" value="{{ "now"|date('Y-m-d H:i:s') }}" class="form-control" readonly></td>  <!-- updatedAt -->
+                <td><button type="button" class="btn btn-danger remove-btn">❌</button></td>
+            `;
+
+            document.querySelector('#selected-employees tbody').appendChild(newRow);
+
+            newRow.querySelector('.remove-btn').addEventListener('click', function () {
+                newRow.remove();
+            });
+        });
+    });
+</script>
+
+<!-- Style (optionnel mais joli) -->
+<style>
+    body { background-color: #f8f9fa; }
+    table { border-radius: 10px; overflow: hidden; }
+    td, th { vertical-align: middle !important; text-align: center; }
+</style>
+
+{% endblock %}
