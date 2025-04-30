@@ -10,33 +10,46 @@
                         <div class="card-body">
                             <h5 class="card-title">Liste des réclamations</h5>
 
-                            <!-- Formulaire de recherche -->
-                            <form action="{{ path('afficher_reclamation') }}" method="GET">
-                                <div class="form-group">
+                            <form action="{{ path('afficher_reclamation') }}" method="GET" class="row">
+                                <div class="col-md-4">
                                     <label for="search">Rechercher par nom, type ou commentaire :</label>
                                     <input type="text" class="form-control" id="search" name="search" value="{{ app.request.query.get('search') }}">
                                 </div>
-                                <button type="submit" class="btn btn-primary">Rechercher</button>
+                                <div class="col-md-4">
+                                    <label for="type_filter">Filtrer par type :</label>
+                                    <select name="type_filter" class="form-control">
+                                        <option value="">-- Tous les types --</option>
+                                        {% for type in types %}
+                                            <option value="{{ type }}" {% if app.request.query.get('type_filter') == type %}selected{% endif %}>{{ type }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-4 d-flex align-items-end gap-2">
+                                    <button type="submit" class="btn btn-success">Rechercher</button>
+                                    {% set selectedType = app.request.query.get('type_filter') %}
+                                    {% if selectedType %}
+                                        <a href="{{ path('pdf_reclamation', {'type': selectedType}) }}" class="btn btn-danger">Exporter PDF</a>
+                                    {% endif %}
+                                </div>
                             </form>
-                            <!-- Fin du formulaire de recherche -->
 
-                            <!-- Tableau des réclamations filtrées -->
                             {% for recl in Reclamation %}
-                            <div class="card mb-3">
-                                <div class="card-body">
-                                    <h5 class="card-title">Nom: {{ recl.name }}</h5>
-                                    <h6 class="card-subtitle mb-2 text-muted">Date: {{ recl.updated|date('d-m-Y') }}</h6>
-                                    <p class="card-text">Type: {{ recl.type }}</p>
-                                    <p class="card-text">Commentaire: {{ recl.commentaire }}</p>
-                                    <img src="{{ asset('uploads/images/' ~ recl.image) }}" style="width:80px; height:80px;" />
-                                    <div class="btn-group" role="group" aria-label="Actions">
-                                        <a class="btn cur-p btn-primary" href="{{ path('send_message', {'id': recl.id}) }}">Repondre</a>
-                                        <a class="btn cur-p btn-danger" href="{{ path('delete_ab', {'id': recl.id}) }}">Supprimer</a>
+                                <div class="card mb-3">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Nom: {{ recl.name }}</h5>
+                                        <h6 class="card-subtitle mb-2 text-muted">Date: {{ recl.updated|date('d-m-Y') }}</h6>
+                                        <p class="card-text">Type: {{ recl.type }}</p>
+                                        <p class="card-text">Commentaire: {{ recl.commentaire }}</p>
+                                        <img src="{{ asset('uploads/images/' ~ recl.image) }}" style="width:300px; height:300px;" />
+                                        <div class="btn-group" role="group" aria-label="Actions">
+                                            <a class="btn btn-danger" href="{{ path('delete_ab', {'id': recl.id}) }}">Supprimer</a>
+                                            <a class="btn btn-success" href="{{ path('update_ab', {'id': recl.id}) }}">mise à jour</a>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+                            {% else %}
+                                <p>Aucune réclamation trouvée.</p>
                             {% endfor %}
-                            <!-- Fin du tableau des réclamations filtrées -->
 
                             <!-- Pagination -->
                             <div class="pagination">
@@ -59,8 +72,7 @@
                                     {% endif %}
                                 </ul>
                             </div>
-                            <!-- Fin de la pagination -->
-                            <!-- Ajoutez ce lien à la suite de votre contenu -->
+                            <!-- Fin pagination -->
                         </div>
                     </div>
                 </div>

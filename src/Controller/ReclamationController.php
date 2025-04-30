@@ -19,6 +19,8 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Snipe\BanBuilder\CensorWords;
 use Dompdf\Dompdf;
 use Dompdf\Options;
+use Knp\Snappy\Pdf;
+use Twig\Environment;
 
 class ReclamationController extends AbstractController
 {
@@ -70,6 +72,7 @@ class ReclamationController extends AbstractController
 
 
               // Censure du contenu du commentaire
+              
         $string = $censor->censorString($Reclamation->getCommentaire());
         $Reclamation->setCommentaire($string['clean']);
 
@@ -94,23 +97,47 @@ class ReclamationController extends AbstractController
     }
 
     #[Route('/afficher_reclamation', name: 'afficher_reclamation')]
-   
-public function AfficheReclamation(ReclamationRepository $repo, PaginatorInterface $paginator, Request $request): Response
-{
-    $searchTerm = $request->query->get('search');
-    $reclamations = $repo->searchByTypeOrNameOrComment($searchTerm);
-
-    $pagination = $paginator->paginate(
-        $reclamations,
-        $request->query->getInt('page', 1),
-        4 // items per page
-    );
-
-    return $this->render('reclamation/index.html.twig', [
-        'Reclamation' => $pagination,
-        'ajoutA' => $reclamations
-    ]);
-}
+    public function AfficheReclamation(
+        ReclamationRepository $repo,
+        PaginatorInterface $paginator,
+        Request $request
+    ): Response {
+        $searchTerm = $request->query->get('search');
+        $typeFilter = $request->query->get('type_filter');
+    
+        $queryBuilder = $repo->createQueryBuilder('r');
+    
+        if ($searchTerm) {
+            $queryBuilder->andWhere('r.Name LIKE :search OR r.commentaire LIKE :search OR r.type LIKE :search')
+                         ->setParameter('search', '%' . $searchTerm . '%');
+        }
+    
+        if ($typeFilter) {
+            $queryBuilder->andWhere('r.type = :type')
+                         ->setParameter('type', $typeFilter);
+        }
+    
+        $pagination = $paginator->paginate(
+            $queryBuilder->getQuery(),
+            $request->query->getInt('page', 1),
+            4
+        );
+    
+        // Correction ici : getScalarResult + array_column pour extraire juste les types
+        $typesRaw = $repo->createQueryBuilder('r')
+            ->select('DISTINCT r.type')
+            ->getQuery()
+            ->getScalarResult();
+    
+        $types = array_column($typesRaw, 'type');
+    
+        return $this->render('reclamation/index.html.twig', [
+            'Reclamation' => $pagination,
+            'types' => $types,
+        ]);
+    }
+    
+    
 #[Route('/afficher_reclamationFront', name: 'afficher_reclamationFront')]
    
 public function AfficheReclamationFront(ReclamationRepository $repo, PaginatorInterface $paginator, Request $request): Response
@@ -191,6 +218,34 @@ public function sendMessage(Request  $request , ManagerRegistry $doctrine): Resp
         ]) ;
  }
 
+
+ #[Route('/reclamations/pdf/{type}', name: 'pdf_reclamation')]
+ public function exportPdf(
+     string $type,
+     ReclamationRepository $repo,
+     Pdf $pdf,
+     Environment $twig
+ ): Response {
+     $reclamations = $repo->findBy(['type' => $type]);
+ 
+     $html = $twig->render('reclamation/pdf.html.twig', [
+         'Reclamation' => $reclamations,
+         'type' => $type
+     ]);
+ 
+     $filename = 'reclamations_' . $type;
+ 
+     return new Response(
+         $pdf->getOutputFromHtml($html),
+         200,
+         [
+             'Content-Type' => 'application/pdf',
+             'Content-Disposition' => 'attachment; filename="' . $filename . '.pdf"',
+         ]
+     );
+ }
+ 
+ 
 
 }
 
