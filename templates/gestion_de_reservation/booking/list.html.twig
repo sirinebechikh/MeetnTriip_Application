@@ -1,0 +1,223 @@
+{% extends 'Gestion_Evennement/base.html.twig' %}
+
+{% block title %}My Bookings{% endblock %}
+
+{% block body %}
+    {% if app.user and app.user.status == 'islogedclient' %}
+        <div class="container py-5">
+            <h1 class="text-center mb-5">My Bookings</h1>
+
+            <!-- Pending Bookings Section -->
+            <div class="mb-5">
+                <h2 class="text-primary mb-4">
+                    <i class="fas fa-clock me-2"></i>Pending Bookings
+                </h2>
+                {% if pendingBookings is not empty %}
+                    <div class="row g-4">
+                        {% for booking in pendingBookings %}
+                            {% if booking.user.id == app.user.id %}
+                                <div class="col-md-6 col-lg-4">
+                                    <div class="card h-100 shadow-sm hover-card">
+                                        <div class="card-header bg-warning bg-opacity-10">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <h5 class="card-title mb-0">{{ booking.evenement.nom ?? 'Booking #' ~ booking.id }}</h5>
+                                                <span class="badge bg-warning">{{ booking.status }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="mb-3">
+                                                <i class="far fa-calendar-alt text-primary me-2"></i>
+                                                {{ booking.bookingDate|date('Y-m-d H:i:s') }}
+                                            </div>
+                                            <div class="mb-3">
+                                                <i class="far fa-user text-primary me-2"></i>
+                                                {{ booking.userName }}
+                                            </div>
+                                            <div class="mb-3">
+                                                <i class="fas fa-tag text-primary me-2"></i>
+                                                ${{ booking.priceTotal }}
+                                            </div>
+                                        </div>
+                                        <div class="card-footer bg-light">
+                                            <div class="d-flex justify-content-between">
+                                                <a href="{{ path('app_booking_update_select', {'id': booking.id, 'type': 'flight'}) }}" 
+                                                   class="btn btn-outline-primary btn-sm">
+                                                    <i class="fas fa-edit me-1"></i>Update
+                                                </a>
+                                                <form action="{{ path('app_booking_delete', {'id': booking.id}) }}" method="post" 
+                                                      onsubmit="return confirm('Are you sure you want to delete this booking?');">
+                                                    <input type="hidden" name="_method" value="DELETE">
+                                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ booking.id) }}">
+                                                    <button type="submit" class="btn btn-outline-danger btn-sm">
+                                                        <i class="fas fa-trash-alt me-1"></i>Delete
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>No pending bookings found.
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Confirmed Bookings Section -->
+            <div class="mb-5">
+                <h2 class="text-success mb-4">
+                    <i class="fas fa-check-circle me-2"></i>Confirmed Bookings
+                </h2>
+                {% if confirmedBookings is not empty %}
+                    <div class="row g-4">
+                        {% for booking in confirmedBookings %}
+                            {% if booking.user.id == app.user.id %}
+                                <div class="col-md-6 col-lg-4">
+                                    <div class="card h-100 shadow-sm hover-card">
+                                        <div class="card-header bg-success bg-opacity-10">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <h5 class="card-title mb-0">{{ booking.evenement.nom ?? 'Booking #' ~ booking.bookingId }}</h5>
+                                                <span class="badge bg-success">{{ booking.status }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="mb-3">
+                                                <i class="far fa-calendar-alt text-success me-2"></i>
+                                                {{ booking.bookingDate|date('Y-m-d H:i:s') }}
+                                            </div>
+                                            <div class="mb-3">
+                                                <i class="far fa-user text-success me-2"></i>
+                                                {{ booking.userName }}
+                                            </div>
+                                            <div class="mb-3">
+                                                <i class="fas fa-tag text-success me-2"></i>
+                                                ${{ booking.priceTotal }}
+                                            </div>
+                                        </div>
+                                        <div class="card-footer bg-light">
+                                            <div class="d-flex justify-content-between gap-2">
+                                                <a href="{{ path('app_booking_update_select', {'id': booking.id, 'type': 'flight'}) }}" 
+                                                   class="btn btn-outline-primary btn-sm">
+                                                    <i class="fas fa-edit me-1"></i>Update
+                                                </a>
+                                                {# Add this QR code button #}
+                                                <a href="{{ path('app_booking_qrcode', {'id': booking.id}) }}" 
+                                                   class="btn btn-outline-dark btn-sm" 
+                                                   title="Show QR Code">
+                                                    <i class="fas fa-qrcode me-1"></i>QR
+                                                </a>
+                                                {% if booking.status == 'confirmed' %}
+                                                    <a href="{{ path('app_booking_pdf', {'id': booking.id}) }}" 
+                                                       class="btn btn-outline-info btn-sm">
+                                                        <i class="fas fa-download me-1"></i>PDF
+                                                    </a>
+                                                {% endif %}
+                                                <form action="{{ path('app_booking_delete', {'id': booking.id}) }}" method="post" 
+                                                      onsubmit="return confirm('Are you sure you want to delete this booking?');">
+                                                    <input type="hidden" name="_method" value="DELETE">
+                                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ booking.id) }}">
+                                                    <button type="submit" class="btn btn-outline-danger btn-sm">
+                                                        <i class="fas fa-trash-alt me-1"></i>Delete
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>No confirmed bookings found.
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Not Confirmed Bookings Section -->
+            <div class="mb-5">
+                <h2 class="text-danger mb-4">
+                    <i class="fas fa-times-circle me-2"></i>Not Confirmed Bookings
+                </h2>
+                {% if notConfirmedBookings is not empty %}
+                    <div class="row g-4">
+                        {% for booking in notConfirmedBookings %}
+                            {% if booking.user.id == app.user.id %}
+                                <div class="col-md-6 col-lg-4">
+                                    <div class="card h-100 shadow-sm hover-card">
+                                        <div class="card-header bg-danger bg-opacity-10">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <h5 class="card-title mb-0">{{ booking.evenement.nom ?? 'Booking #' ~ booking.id }}</h5>
+                                                <span class="badge bg-danger">{{ booking.status }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="mb-3">
+                                                <i class="far fa-calendar-alt text-danger me-2"></i>
+                                                {{ booking.bookingDate|date('Y-m-d H:i:s') }}
+                                            </div>
+                                            <div class="mb-3">
+                                                <i class="fas fa-comment text-danger me-2"></i>
+                                                {{ booking.specialRequests|default('No comments')|slice(0, 30) ~ '...' }}
+                                            </div>
+                                            <div class="mb-3">
+                                                <i class="fas fa-tag text-danger me-2"></i>
+                                                ${{ booking.priceTotal }}
+                                            </div>
+                                        </div>
+                                        <div class="card-footer bg-light">
+                                            <div class="d-flex justify-content-between">
+                                                <a href="{{ path('app_booking_update', {'id': booking.id}) }}" 
+                                                   class="btn btn-outline-danger btn-sm">
+                                                    <i class="fas fa-edit me-1"></i>Review
+                                                </a>
+                                                <form action="{{ path('app_booking_delete', {'id': booking.id}) }}" method="post" 
+                                                      onsubmit="return confirm('Are you sure you want to delete this booking?');">
+                                                    <input type="hidden" name="_method" value="DELETE">
+                                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ booking.id) }}">
+                                                    <button type="submit" class="btn btn-outline-danger btn-sm">
+                                                        <i class="fas fa-trash-alt me-1"></i>Delete
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>No bookings awaiting confirmation
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <style>
+            .hover-card {
+                transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            }
+            .hover-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+            }
+            .card-header {
+                border-bottom: none;
+            }
+            .card-footer {
+                border-top: none;
+            }
+        </style>
+    {% else %}
+        <div class="container py-5 text-center">
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                Access denied. This page is only available for clients.
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

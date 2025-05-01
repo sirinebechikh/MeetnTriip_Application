@@ -1,0 +1,129 @@
+{% extends 'Gestion_Evennement/base.html.twig' %}
+
+{% block title %}Update Hotel Selection{% endblock %}
+
+{% block body %}
+    <div class="container py-5">
+        <h1 class="text-center mb-5 wow fadeInUp">Select Hotel in {{ eventLocation }}</h1>
+        
+        <div class="row g-4">
+            {% for hotel in hotels %}
+                {% set hotelData = hotelImages|filter(h => h.name == hotel.name)|first %}
+                <div class="col-lg-4 col-md-6 wow fadeInUp">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-img-top position-relative overflow-hidden" style="height: 200px;">
+                            <img src="{{ hotelData.frontimage ?? '/images/default-hotel.jpg' }}" 
+                                 alt="{{ hotel.name }}" 
+                                 class="img-fluid"
+                                 style="object-fit: cover; width: 100%; height: 100%">
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title text-primary">{{ hotel.name }}</h5>
+                            <div class="card-text mb-3">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div class="badge bg-primary bg-opacity-10 text-primary p-2">
+                                        <i class="fas fa-map-marker-alt me-1"></i>{{ hotel.city }}
+                                    </div>
+                                    <div class="text-end">
+                                        <div class="text-muted small">per night</div>
+                                        <h4 class="text-success mb-0">${{ hotel.pricePerNight|number_format(2) }}</h4>
+                                    </div>
+                                </div>
+                                
+                                <div class="rating mb-3">
+                                    {% for i in 1..5 %}
+                                        {% if i <= hotel.rating %}
+                                            <i class="fas fa-star text-warning"></i>
+                                        {% else %}
+                                            <i class="far fa-star text-warning"></i>
+                                        {% endif %}
+                                    {% endfor %}
+                                    <span class="ms-2 text-muted">({{ hotel.rating }}/5)</span>
+                                </div>
+                            </div>
+
+                            <div class="mt-auto">
+                                <button class="btn btn-outline-primary w-100 mb-2" 
+                                        onclick="showHotelDetails('{{ hotel.hotelId }}')">
+                                    <i class="fas fa-images me-1"></i>
+                                    View Details
+                                </button>
+                                <form action="{{ path('app_booking_update_process', {'id': booking.bookingId}) }}" method="POST">
+                                    <input type="hidden" name="hotel_id" value="{{ hotel.hotelId }}">
+                                    <input type="hidden" name="hotel_price" value="{{ hotel.pricePerNight }}">
+                                    <button type="submit" class="btn btn-primary w-100">
+                                        <i class="fas fa-check-circle me-1"></i>
+                                        Select Hotel
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hotel Details Modal -->
+                <div class="modal fade" id="hotelModal-{{ hotel.hotelId }}" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">{{ hotel.name }}</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                {% if hotelData %}
+                                <div id="carousel-{{ hotel.hotelId }}" class="carousel slide mb-4" data-bs-ride="carousel">
+                                    <div class="carousel-inner">
+                                        {% for image in hotelData.images %}
+                                            <div class="carousel-item {% if loop.first %}active{% endif %}">
+                                                <img src="{{ image }}" class="d-block w-100 rounded" 
+                                                     alt="Hotel image {{ loop.index }}" 
+                                                     style="height: 400px; object-fit: cover;">
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                    <button class="carousel-control-prev" type="button" data-bs-target="#carousel-{{ hotel.hotelId }}" data-bs-slide="prev">
+                                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                    </button>
+                                    <button class="carousel-control-next" type="button" data-bs-target="#carousel-{{ hotel.hotelId }}" data-bs-slide="next">
+                                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                    </button>
+                                </div>
+                                {% endif %}
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h5><i class="fas fa-map-marker-alt text-primary me-2"></i>Location</h5>
+                                        <p>{{ hotel.city }}</p>
+                                        
+                                        <h5><i class="fas fa-star text-warning me-2"></i>Rating</h5>
+                                        <p>{{ hotel.rating }}/5</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h5><i class="fas fa-info-circle text-primary me-2"></i>Description</h5>
+                                        <p>{{ hotel.description }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        
+        <div class="text-center mt-5">
+            <a href="{{ path('app_booking_update_select', {'id': booking.bookingId, 'type': 'conference'}) }}" 
+               class="btn btn-primary btn-lg">
+                Next: Select Conference Location
+            </a>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+    function showHotelDetails(hotelId) {
+        new bootstrap.Modal(document.getElementById(`hotelModal-${hotelId}`)).show();
+    }
+    </script>
+{% endblock %}

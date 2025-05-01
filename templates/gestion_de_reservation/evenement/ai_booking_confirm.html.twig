@@ -1,0 +1,91 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}AI Booking Recommendations{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <h2>AI Booking Recommendations for {{ event.nom }}</h2>
+        
+        <div class="recommendations mt-4">
+            <h3>Selected Services:</h3>
+            <ul class="list-group">
+                <li class="list-group-item">
+                    <h4>Flight</h4>
+                    <p>{{ flight.airline }} (ID: {{ flight.flightId }}) - ${{ flight.price }}</p>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="services[]" value="flight" id="flightCheck" checked>
+                        <label class="form-check-label" for="flightCheck">Include Flight Service</label>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <h4>Hotel</h4>
+                    <p>{{ hotel.name }} (ID: {{ hotel.hotelId }}) - ${{ hotel.pricePerNight }}/night</p>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="services[]" value="hotel" id="hotelCheck" checked>
+                        <label class="form-check-label" for="hotelCheck">Include Hotel Service</label>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <h4>Transport</h4>
+                    <p>{{ transport.type }} (ID: {{ transport.transportId }}) - ${{ transport.price }}</p>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="services[]" value="transport" id="transportCheck" checked>
+                        <label class="form-check-label" for="transportCheck">Include Transport Service</label>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <h4>Conference Location</h4>
+                    <p>{{ conference.name }} (ID: {{ conference.locationId }}) - ${{ conference.pricePerDay }}/day</p>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="services[]" value="conference" id="conferenceCheck" checked>
+                        <label class="form-check-label" for="conferenceCheck">Include Conference Venue</label>
+                    </div>
+                </li>
+            </ul>
+
+            <div class="total mt-3">
+                <h4>Total Price: ${{ recommendations.total_price }}</h4>
+            </div>
+
+            <form action="{{ submit_url }}" method="post" class="mt-4" onsubmit="return validateForm()">
+                <div class="mb-3">
+                    <label for="specialRequests" class="form-label">Special Requests</label>
+                    <textarea class="form-control {% if app.flashes('error') %}is-invalid{% endif %}" 
+                              id="specialRequests" 
+                              name="specialRequests" 
+                              rows="3"
+                              placeholder="Enter any special requirements or preferences...">{{ app.request.request.get('specialRequests') }}</textarea>
+                    <div class="invalid-feedback" id="specialRequestsError" style="display: none;">
+                        Special requests must contain at least 10 characters
+                    </div>
+                </div>
+
+                <input type="hidden" name="flight_id" value="{{ flight.flightId }}">
+                <input type="hidden" name="hotel_id" value="{{ hotel.hotelId }}">
+                <input type="hidden" name="transport_id" value="{{ transport.transportId }}">
+                <input type="hidden" name="conference_id" value="{{ conference.locationId }}">
+                <input type="hidden" name="total_price" value="{{ recommendations.total_price }}">
+
+                <button type="submit" class="btn btn-primary">Confirm Booking</button>
+                <a href="{{ path('app_evenement_index') }}" class="btn btn-secondary">Cancel</a>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+     <script>
+    function validateForm() {
+        const specialRequests = document.getElementById('specialRequests').value.trim();
+        const errorElement = document.getElementById('specialRequestsError');
+        
+        if (specialRequests.length < 10) {
+            document.getElementById('specialRequests').classList.add('is-invalid');
+            errorElement.style.display = 'block';
+            return false;
+        }
+        
+        return true;
+    }
+    </script>
+{% endblock %}

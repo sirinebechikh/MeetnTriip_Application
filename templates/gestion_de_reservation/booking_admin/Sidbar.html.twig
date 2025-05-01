@@ -1,0 +1,142 @@
+<aside class="left-sidebar" style="background-color: #003a66; border-right: 2px solid #e02454;">
+  <!-- Sidebar scroll-->
+  <div>
+    <!-- Logo -->
+    <div class="brand-logo d-flex align-items-center justify-content-between px-4 py-3">
+      <a href="{{ path('app_admin') }}" class="navbar-brand p-0 text-white d-flex align-items-center">
+        <img src="{{ asset('img/brand-logo.png') }}" class="img-fluid me-2" style="height: 100%;" alt="Logo">
+        <h1 class="fs-5 m-0" style="color: #ffffff;">Meet<span ">N</span>Trip</h1>
+      </a>
+      <div class="close-btn d-xl-none d-block sidebartoggler cursor-pointer text-white" id="sidebarCollapse">
+        <i class="ti ti-x fs-5"></i>
+      </div>
+    </div>
+
+    <!-- Sidebar navigation -->
+    <nav class="sidebar-nav scroll-sidebar" data-simplebar id="sidebarnav">
+      <ul class="pt-3" id="sidebarnav">
+        <!-- Dashboard Section -->
+        <li class="nav-small-cap text-white-50 px-4 mb-2">
+          <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
+          <span class="hide-menu">DASHBOARD</span>
+        </li>
+
+        <li class="sidebar-item mb-1">
+          <a class="sidebar-link text-white d-flex align-items-center px-4 py-2" style="width: 100%;" href="{{ path('app_admin') }}">
+            <i class="ti ti-layout-dashboard me-2"></i>
+            <span class="hide-menu">Dashboard</span>
+          </a>
+        </li>
+
+        <!-- Management Section -->
+        <li class="nav-small-cap text-white-50 px-4 mt-4 mb-2">
+          <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
+          <span class="hide-menu">MANAGEMENT</span>
+        </li>
+        <li class="sidebar-item mb-1">
+          <a class="sidebar-link text-white d-flex align-items-center px-4 py-2" style="width: 100%;" href="{{ path('app_user_index') }}">
+            <i class="ti ti-layout-dashboard me-2"></i>
+            <span class="hide-menu">Users</span>
+          </a>
+        </li>
+        <!-- Event Management -->
+        <li class="sidebar-item mb-1">
+          <a class="sidebar-link text-white d-flex align-items-center px-4 py-2" style="width: 100%;" href="{{ path('admin_evenements') }}">
+            <i class="ti ti-calendar-event me-2"></i>
+            <span class="hide-menu">Event  </span>
+          </a>
+        </li>
+
+        <!-- Reservation Management -->
+        <li class="sidebar-item mb-1">
+          <a class="sidebar-link text-white d-flex align-items-center px-4 py-2" style="width: 100%;" href="{{ path('admin_bookings_list') }}">
+            <i class="ti ti-book me-2"></i>
+            <span class="hide-menu">Reservation  </span>
+          </a>
+        </li>
+
+        <!-- Payment Management -->
+        <li class="sidebar-item mb-1">
+          <a class="sidebar-link text-white d-flex align-items-center px-4 py-2" style="width: 100%;" href="{{ path('admin_paid_bookings') }}">
+            <i class="ti ti-credit-card me-2"></i>
+            <span class="hide-menu">Payment </span>
+          </a>
+        </li>
+
+        <li class="sidebar-item mb-1">
+            <a class="sidebar-link text-white d-flex align-items-center px-4 py-2" style="width: 100%;" href="{{ path('admin_conference_locations_list') }}">
+                <i class="ti ti-building me-2"></i>
+                <span class="hide-menu">Conference Locations</span>
+            </a>
+        </li>
+        <li class="sidebar-item mb-1">
+          <a class="sidebar-link text-white d-flex align-items-center px-4 py-2" style="width: 100%;" href="{{ path('add_Reponse') }}">
+              <i class="ti ti-building me-2"></i>
+              <span class="hide-menu"> add Reponse</span>
+          </a>
+          <li class="sidebar-item mb-1">
+            <a class="sidebar-link text-white d-flex align-items-center px-4 py-2" style="width: 100%;" href="{{ path('afficher_reclamation') }}">
+                <i class="ti ti-building me-2"></i>
+                <span class="hide-menu"> Show Reclam</span>
+            </a> <li class="sidebar-item mb-1">
+              <a class="sidebar-link text-white d-flex align-items-center px-4 py-2" style="width: 100%;" href="{{ path('afficher_reponse') }}">
+                  <i class="ti ti-building me-2"></i>
+                  <span class="hide-menu"> Show Reponse</span>
+              </a>
+      </li>
+          <!-- Forum Statistics -->
+      <li class="sidebar-item mb-1">
+          <a class="sidebar-link text-white d-flex align-items-center px-4 py-2" style="width: 100%;" href="{{ path('admin_forum_stats') }}">
+              <i class="ti ti-chart-bar me-2"></i>
+              <span class="hide-menu">Forum Statistics</span>
+          </a>
+      </li>
+      
+      </ul>
+    </nav>
+     <!-- End Sidebar navigation -->
+  </div>
+</aside>
+
+<!-- Sidebar Styles -->
+<style>
+  /* Sidebar link formatting */
+  .sidebar-link {
+    text-decoration: none !important;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background-color 0.3s ease;
+    width:50%;
+  }
+
+  /* Hover effect on sidebar item */
+  .sidebar-item:hover {
+    background-color: #e02454;
+    border-radius: 4px;
+  }
+
+  /* Hover effect on text */
+  .sidebar-link:hover {
+    color: #ffffff;
+  }
+
+  /* Adjust spacing between items */
+  .sidebar-item {
+    margin-bottom: 5px;
+  }
+
+ 
+
+  /* Section titles */
+  .nav-small-cap {
+    font-weight: bold;
+    text-transform: uppercase;
+    padding-top: 15px;
+  }
+
+  /* Sidebar close button */
+  .close-btn {
+    cursor: pointer;
+  }
+</style>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>{% block title %}Gestion des Événements{% endblock %}</title>
+
+    <!-- CSS files -->
+    <link rel="stylesheet" href="{{ asset('assets/css/styles.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/libs/bootstrap/dist/css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/libs/font-awesome/css/font-awesome.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/libs/simplebar/dist/simplebar.css') }}">
+    
+    <!-- Add your custom styles here -->
+    <link rel="stylesheet" href="{{ asset('assets/css/app.min.css') }}">
+</head>
+<body>
+    <!-- Sidebar and Navbar -->
+    {% include 'gestion_de_reservation/booking_admin/Sidbar.html.twig' %}
+    {% include 'gestion_de_reservation/booking_admin/Navbar.html.twig' %}
+
+    <!-- Main Content -->
+    <div class="container-fluid ">
+ 
+      <div class="row">
+        <div class="d-flex flex-wrap justify-content-center gap-4 mt-4">
+ 
+                  {% block admin %}{% endblock %}
+            </div>
+        </div>           </div>   
+
+        <style>
+            .container-fluidd {
+                padding-left: 10px;  
+                padding-top:10px
+            }
+            .container-fluid {
+                padding-left: 270px;  
+                padding-top:50px
+            }
+        </style>
+    <!-- Footer -->
+ 
+    <!-- JS files -->
+    {% block javascripts %}
+    <script src="{{ asset('assets/libs/jquery/dist/jquery.min.js') }}"></script>
+    <script src="{{ asset('assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ asset('assets/js/sidebarmenu.js') }}"></script>
+    <script src="{{ asset('assets/js/app.min.js') }}"></script>
+    <script src="{{ asset('assets/libs/apexcharts/dist/apexcharts.min.js') }}"></script>
+    <script src="{{ asset('assets/libs/simplebar/dist/simplebar.js') }}"></script>
+    <script src="{{ asset('assets/js/dashboard.js') }}"></script>
+
+ {% endblock %}
+</body>
+</html>

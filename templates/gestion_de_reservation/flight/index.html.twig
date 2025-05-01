@@ -1,0 +1,134 @@
+{% extends 'Gestion_Evennement/base.html.twig' %}
+
+{% block title %}Flights - MeetNTrip
+{% endblock %}
+
+{% block body %}
+	<!-- Spinner Start -->
+	<div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+		<div class="spinner-border text-secondary" style="width: 3rem; height: 3rem;" role="status">
+			<span class="sr-only">Loading...</span>
+		</div>
+	</div>
+	<!-- Spinner End -->
+
+	<div class="container py-5">
+		<h1 class="text-center mb-4">Available Flights</h1>
+
+		<!-- Filter Buttons -->
+		<div class="mb-4 text-center">
+			<button class="btn btn-primary mx-1 filter-btn" data-category="all">All</button>
+			<button class="btn btn-outline-primary mx-1 filter-btn" data-category="Economy">Economy</button>
+			<button class="btn btn-outline-primary mx-1 filter-btn" data-category="Business">Business</button>
+			<button class="btn btn-outline-primary mx-1 filter-btn" data-category="First Class">First Class</button>
+		</div>
+
+		<div class="flight-info mb-4 p-4 bg-light rounded">
+			<p><strong>Destination:</strong> {{ city }}</p>
+			<p><strong>Event Dates:</strong> {{ date_debut|date('Y-m-d') }} to {{ date_fin|date('Y-m-d') }}</p>
+			<p><strong>Number of Guests:</strong> {{ nombre_invite }}</p>
+			{% if event %}
+				<p><strong>Event Name:</strong> {{ event.nom }}</p>
+			{% endif %}
+		</div>
+
+		<div class="row g-4" id="flight-list">
+			{% for flight in flights %}
+				<div class="col-lg-4 col-md-6 wow fadeInUp flight-card" data-category="{{ flight.type }}" data-wow-delay="0.1s">
+					<div class="card h-100 shadow-sm">
+						<div class="card-body d-flex flex-column">
+							{# Airline Logo Section #}
+							<div class="airline-logo-container mb-3">
+								<img src="{% for airline in airlineLogos %}{% if airline.airline == flight.airline %}{{ airline.logo }}{% endif %}{% endfor %}" 
+									 alt="{{ flight.airline }} logo" 
+									 class="img-fluid rounded-top" 
+									 style="height: 200px; object-fit: cover;">
+								</div>
+
+							{# Flight Details #}
+							<h5 class="card-title text-primary">{{ flight.destination }}</h5>
+							<div class="card-text mb-3">
+								<div class="d-flex align-items-center mb-2">
+									<i class="fas fa-plane fa-fw me-2 text-secondary"></i>
+									<span class="fw-bold">{{ flight.airline }}</span>
+								</div>
+								
+								<div class="row g-2">
+									<div class="col-6">
+										<div class="bg-light p-2 rounded">
+											<small class="text-muted">Departure</small>
+											<div class="fw-bold">{{ flight.departureTime|date('H:i') }}</div>
+										</div>
+									</div>
+									<div class="col-6">
+										<div class="bg-light p-2 rounded">
+											<small class="text-muted">Return</small>
+											<div class="fw-bold">{{ flight.backTime|date('H:i') }}</div>
+										</div>
+									</div>
+								</div>
+
+								<div class="d-flex justify-content-between align-items-center mt-3">
+									<div class="badge bg-primary bg-opacity-10 text-primary p-2">
+										<i class="fas fa-tag me-1"></i>{{ flight.type }}
+									</div>
+									<div class="text-end">
+										<div class="text-muted small">Total Price</div>
+										<h4 class="text-success mb-0">{{ flight.price|number_format(2) }} TND </h4>
+									</div>
+								</div>
+							</div>
+
+							<div class="mt-auto">
+								<a href="{{ path('app_flight_select', { 
+									'flight_id': flight.flightId, 
+									'city': city, 
+									'date_debut': date_debut, 
+									'date_fin': date_fin, 
+									'nombre_invite': nombre_invite, 
+									'userid': userid, 
+									'id_evenement': id_evenement 
+								}) }}" class="btn btn-primary w-100">
+									<i class="fas fa-check-circle me-1"></i>
+									Select Flight
+								</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			{% else %}
+				<div class="col-12">
+					<div class="alert alert-info text-center py-4">
+						<i class="fas fa-plane-slash fa-3x text-primary mb-3"></i>
+						<h4>No flights available for this destination</h4>
+						<p class="mb-0">Please try different search criteria</p>
+					</div>
+				</div>
+			{% endfor %}
+		</div>
+	</div>
+{% endblock %}
+
+{% block javascripts %}
+	{{ parent() }}
+	<script>
+		document.querySelectorAll('.filter-btn').forEach(function(btn) {
+			btn.addEventListener('click', function() {
+				var category = this.getAttribute('data-category');
+				document.querySelectorAll('.filter-btn').forEach(function(b) {
+					b.classList.remove('btn-primary');
+					b.classList.add('btn-outline-primary');
+				});
+				this.classList.remove('btn-outline-primary');
+				this.classList.add('btn-primary');
+				document.querySelectorAll('.flight-card').forEach(function(card) {
+					if (category === 'all' || card.getAttribute('data-category') === category) {
+						card.style.display = '';
+					} else {
+						card.style.display = 'none';
+					}
+				});
+			});
+		});
+	</script>
+{% endblock %}

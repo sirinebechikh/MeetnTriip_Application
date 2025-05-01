@@ -1,0 +1,92 @@
+<div class="body-wrapper">
+    <!-- Header Start -->
+    <header class="app-header">
+        <nav class="navbar navbar-expand-lg navbar-light">
+            <ul class="navbar-nav">
+                <!-- Logo -->
+                <div class="brand-logo d-flex align-items-center justify-content-between px-4 py-3">
+                  <a href="{{ path('app_admin') }}" class="navbar-brand p-0 text-white d-flex align-items-center">
+                    <img src="{{ asset('img/brand-logo.png') }}" class="img-fluid me-2" style="height: 100%;" alt="Logo">
+                    <h1 class="fs-5 m-0" style="color: #ffffff;"> <span style="color: #e02454;font-size:40px">MeeTntreep</span> </h1>
+                </a>
+                  <div class="close-btn d-xl-none d-block sidebartoggler cursor-pointer text-white" id="sidebarCollapse">
+                    <i class="ti ti-x fs-5"></i>
+                  </div>
+                </div>
+                <li class="nav-item d-block d-xl-none">
+                    
+                    <a class="nav-link sidebartoggler nav-icon-hover" id="headerCollapse" href="javascript:void(0)">
+                        <i class="ti ti-menu-2"></i>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link nav-icon-hover" href="javascript:void(0)">
+                        <i class="ti ti-bell-ringing"></i>
+                        <div class="notification bg-primary rounded-circle"></div>
+                    </a>
+                </li>
+            </ul>
+            
+            <div class="navbar-collapse justify-content-end px-0" id="navbarNav">
+                <ul class="navbar-nav flex-row ms-auto align-items-center justify-content-end">
+                     <li class="nav-item dropdown">
+                        <a class="nav-link nav-icon-hover" href="javascript:void(0)" id="drop2" data-bs-toggle="dropdown" aria-expanded="false">
+                            <!-- Use Symfony's asset() function for the profile image -->
+                            <img src="{{ asset('assets/images/profile/user-1.jpg') }}" alt="" width="35" height="35" class="rounded-circle">
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up" aria-labelledby="drop2">
+                            <div class="message-body">
+                                <a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
+                                    <i class="ti ti-user fs-6"></i>
+                                    <p class="mb-0 fs-3">My Profile</p>
+                                </a>
+                                <a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
+                                    <i class="ti ti-mail fs-6"></i>
+                                    <p class="mb-0 fs-3">My Account</p>
+                                </a>
+                                <a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
+                                    <i class="ti ti-list-check fs-6"></i>
+                                    <p class="mb-0 fs-3">My Task</p>
+                                </a>
+                                <!-- Logout Link -->
+                                <a href="{{ path('app_logout') }}" class="btn btn-outline-primary mx-3 mt-2 d-block">Logout</a>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+    <!-- Header End -->
+  </div>
+  
+  <style>
+    /* Ensuring the dropdown menu items are stacked vertically */
+    .dropdown-menu .dropdown-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 15px;
+    }
+  
+    /* Adjust the dropdown to stack its items */
+    .dropdown-menu {
+        padding: 0;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+  
+    /* Space out the logout button at the bottom */
+    .dropdown-menu .btn-outline-primary {
+        margin-top: 15px;
+        margin-left: 10px;
+        margin-right: 10px;
+        width: calc(100% - 20px); /* Make the logout button take full width */
+    }
+  
+    /* Optional: Ensure that the dropdown header is styled appropriately */
+    .dropdown-menu .message-body {
+        padding: 0;
+    }
+  </style>
+  

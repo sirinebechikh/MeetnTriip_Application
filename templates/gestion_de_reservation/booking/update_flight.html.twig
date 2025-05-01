@@ -1,0 +1,113 @@
+{% extends 'Gestion_Evennement/base.html.twig' %}
+
+{% block title %}Select Flight{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <h1 class="text-center mb-4">Select Flight for {{ eventLocation }}</h1>
+
+        <!-- Filter Buttons -->
+        <div class="mb-4 text-center">
+            <button class="btn btn-primary mx-1 filter-btn" data-category="all">All</button>
+            <button class="btn btn-outline-primary mx-1 filter-btn" data-category="Economy">Economy</button>
+            <button class="btn btn-outline-primary mx-1 filter-btn" data-category="Business">Business</button>
+            <button class="btn btn-outline-primary mx-1 filter-btn" data-category="First Class">First Class</button>
+        </div>
+
+        <form method="POST" action="{{ path('app_booking_update_process', {'id': booking.bookingId}) }}">
+            <div class="row g-4">
+                {% for flight in flights %}
+                    <div class="col-lg-4 col-md-6 flight-card" data-category="{{ flight.type }}">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body d-flex flex-column">
+                                {# Airline Logo Section #}
+                                <div class="airline-logo-container mb-3">
+                                    <img src="{% for airline in airlineLogos %}{% if airline.airline == flight.airline %}{{ airline.logo }}{% endif %}{% endfor %}" 
+                                         alt="{{ flight.airline }} logo" 
+                                         class="img-fluid rounded-top" 
+                                         style="height: 200px; object-fit: cover;">
+                                </div>
+
+                                {# Flight Details #}
+                                <h5 class="card-title text-primary">{{ flight.destination }}</h5>
+                                <div class="card-text mb-3">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <i class="fas fa-plane fa-fw me-2 text-secondary"></i>
+                                        <span class="fw-bold">{{ flight.airline }}</span>
+                                    </div>
+                                    
+                                    <div class="row g-2">
+                                        <div class="col-6">
+                                            <div class="bg-light p-2 rounded">
+                                                <small class="text-muted">Departure</small>
+                                                <div class="fw-bold">{{ flight.departureTime|date('H:i') }}</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="bg-light p-2 rounded">
+                                                <small class="text-muted">Return</small>
+                                                <div class="fw-bold">{{ flight.backTime|date('H:i') }}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex justify-content-between align-items-center mt-3">
+                                        <div class="badge bg-primary bg-opacity-10 text-primary p-2">
+                                            <i class="fas fa-tag me-1"></i>{{ flight.type }}
+                                        </div>
+                                        <div class="text-end">
+                                            <div class="text-muted small">Total Price</div>
+                                            <h4 class="text-success mb-0">${{ flight.price|number_format(2) }}</h4>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {# Selection Radio Button #}
+                                <div class="mt-auto">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="flight_id" 
+                                               value="{{ flight.flightId }}" id="flight_{{ flight.flightId }}"
+                                               {% if booking.flight and booking.flight.flightId == flight.flightId %}checked{% endif %}>
+                                        <label class="form-check-label" for="flight_{{ flight.flightId }}">
+                                            Select this flight
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            {# Form buttons remain the same #}
+            <div class="mt-4 text-center">
+                <button type="submit" class="btn btn-primary btn-lg px-5">Next: Select Hotel</button>
+                <a href="{{ path('app_bookings_list') }}" class="btn btn-outline-secondary btn-lg px-5">Cancel</a>
+            </div>
+        </form>
+    </div>
+
+    {% block javascripts %}
+        {{ parent() }}
+        <script>
+            document.querySelectorAll('.filter-btn').forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    var category = this.getAttribute('data-category');
+                    document.querySelectorAll('.filter-btn').forEach(function(b) {
+                        b.classList.remove('btn-primary');
+                        b.classList.add('btn-outline-primary');
+                    });
+                    this.classList.remove('btn-outline-primary');
+                    this.classList.add('btn-primary');
+                    document.querySelectorAll('.flight-card').forEach(function(card) {
+                        if (category === 'all' || card.getAttribute('data-category') === category) {
+                            card.style.display = '';
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+                });
+            });
+        </script>
+    {% endblock %}
+{% endblock %}

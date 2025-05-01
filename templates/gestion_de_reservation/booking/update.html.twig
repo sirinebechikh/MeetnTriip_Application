@@ -1,0 +1,68 @@
+{% extends 'Gestion_Evennement/base.html.twig' %}
+
+{% block title %}Update Booking{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <h1>Update Booking</h1>
+        <p>Event Location: {{ eventLocation }}</p>
+        
+        <form method="POST">
+            <div class="form-group">
+                <label for="flight">Flights to {{ eventLocation }}</label>
+                <select name="flight_id" class="form-control">
+                    <option value="">Select Flight</option>
+                    {% for flight in flights %}
+                        <option value="{{ flight.flightId }}" {% if booking.flight and booking.flight.flightId == flight.flightId %}selected{% endif %}>
+                            {{ flight.airline }} - {{ flight.departureTime|date('Y-m-d H:i') }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="hotel">Hotels in {{ eventLocation }}</label>
+                <select name="hotel_id" class="form-control">
+                    <option value="">Select Hotel</option>
+                    {% for hotel in hotels %}
+                        <option value="{{ hotel.hotelId }}" {% if booking.hotel and booking.hotel.hotelId == hotel.hotelId %}selected{% endif %}>
+                            {{ hotel.name }} - {{ hotel.city }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="conference_location">Conference Locations in {{ eventLocation }}</label>
+                <select name="location_id" class="form-control">
+                    <option value="">Select Location</option>
+                    {% for location in conferenceLocations %}
+                        <option value="{{ location.locationId }}" {% if booking.conferenceLocation and booking.conferenceLocation.locationId == location.locationId %}selected{% endif %}>
+                            {{ location.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="transport">Transport</label>
+                <select name="transport_id" class="form-control">
+                    <option value="">Select Transport</option>
+                    {% for transport in transports %}
+                        <option value="{{ transport.transportId }}" {% if booking.transport and booking.transport.transportId == transport.transportId %}selected{% endif %}>
+                            {{ transport.type }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="special_requests">Special Requests</label>
+                <textarea name="special_requests" class="form-control">{{ booking.specialRequests }}</textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Update Booking</button>
+            <a href="{{ path('app_bookings_list') }}" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+{% endblock %}

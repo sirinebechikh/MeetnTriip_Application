@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Booking Confirmation #{{ booking.id }}</title>
+    <style>
+        body { 
+            font-family: 'Helvetica', Arial, sans-serif;
+            color: #333;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            border-bottom: 3px solid #2c3e50;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .logo {
+            max-width: 200px;
+            margin-bottom: 15px;
+        }
+        .section {
+            margin-bottom: 25px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            border: 1px solid #eee;
+        }
+        .section-title {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 5px;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+        .grid-container {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .grid-item {
+            width: 48%;
+        }
+        .label {
+            font-weight: 600;
+            color: #3498db;
+            min-width: 120px;
+            display: inline-block;
+        }
+        .value {
+            color: #555;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f8f9fa;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+            color: #777;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1 style="color: #2c3e50; margin-bottom: 5px;">Booking Confirmation</h1>
+        <p style="color: #7f8c8d; margin-top: 0;">Confirmation #{{ booking.id }}</p>
+    </div>
+
+    <div class="grid-container">
+        <div class="grid-item">
+            <h3 style="color: #2c3e50; margin-bottom: 10px;">MeetNtrip Details</h3>
+            <p><span class="label">Booking Date:</span> <span class="value">{{ booking.bookingDate|date('M d, Y H:i') }}</span></p>
+            <p><span class="label">Status:</span> <span class="value" style="color: {{ booking.status == 'confirmed' ? '#27ae60' : '#e67e22' }};">{{ booking.status|upper }}</span></p>
+        </div>
+        <div class="grid-item">
+            <h3 style="color: #2c3e50; margin-bottom: 10px;">Client Information</h3>
+            <p><span class="label">Name:</span> <span class="value">{{ booking.userName }}</span></p>
+            <p><span class="label">Event:</span> <span class="value">{{ booking.evenement.nom ?? 'N/A' }}</span></p>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Booking Details</div>
+        
+        {% if booking.flight %}
+        <h4 style="color: #34495e; margin-bottom: 10px;">Flight Information</h4>
+        <table>
+            <tr>
+                <th>Airline</th>
+                <th>Departure</th>
+                <th>Return</th>
+            </tr>
+            <tr>
+                <td>{{ booking.airlines }}</td>
+                <td>{{ booking.departureTime|date('M d, Y H:i') }}</td>
+                <td>{{ booking.backTime|date('M d, Y H:i') }}</td>
+            </tr>
+        </table>
+        {% endif %}
+
+        {% if booking.hotel %}
+        <h4 style="color: #34495e; margin-bottom: 10px; margin-top: 20px;">Accommodation</h4>
+        <p><span class="label">Hotel:</span> {{ booking.hotelName }}</p>
+        <p><span class="label">Location:</span> {{ booking.hotelLocation }}</p>
+        {% endif %}
+
+        <h4 style="color: #34495e; margin: 20px 0 10px;">Payment Summary</h4>
+        <table>
+            <tr>
+                <th>Description</th>
+                <th>Amount</th>
+            </tr>
+            {% if booking.flight %}
+            <tr>
+                <td>Flight ({{ booking.airlines }})</td>
+                <td>${{ booking.flightPrice|number_format(2) }}</td>
+            </tr>
+            {% endif %}
+            {% if booking.hotel %}
+            <tr>
+                <td>Hotel ({{ booking.hotelName }})</td>
+                <td>${{ booking.hotelPricePerNight|number_format(2) }}/night</td>
+            </tr>
+            {% endif %}
+            <tr style="font-weight: bold; background-color: #f8f9fa;">
+                <td>Total</td>
+                <td>${{ booking.priceTotal|number_format(2) }}</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="footer">
+        <p>Thank you for choosing MeetNtrip!</p>
+        <p>Contact us: contact@meetntrip.tn | +216 12 345 678</p>
+        <p>Official Partner of Tunisian Tourism Authority</p>
+    </div>
+</body>
+</html>

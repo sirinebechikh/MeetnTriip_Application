@@ -1,0 +1,228 @@
+{% extends 'gestion_de_reservation/booking_admin/base.html.twig' %}
+
+{% block title %}Edit Conference Location{% endblock %}
+
+{% block admin %}
+<div class="container-fluid py-4">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h3 class="mb-0">Edit Conference Location</h3>
+        </div>
+
+        {% for message in app.flashes('error') %}
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+
+        <div class="card-body">
+            <form method="POST" class="needs-validation" novalidate onsubmit="return validateForm()">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="name" class="form-label">Name</label>
+                            <input type="text" class="form-control" id="name" name="name" value="{{ location.name }}" required>
+                            <div class="invalid-feedback">Please enter a name.</div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="city" class="form-label">City</label>
+                            <select class="form-control" id="city" name="city" required>
+                                <option value="">Select a city</option>
+                                <option value="Paris" {% if location.city == 'Paris' %}selected{% endif %}>Paris</option>
+                                <option value="New York" {% if location.city == 'New York' %}selected{% endif %}>New York</option>
+                                <option value="Dubai" {% if location.city == 'Dubai' %}selected{% endif %}>Dubai</option>
+                                <option value="London" {% if location.city == 'London' %}selected{% endif %}>London</option>
+                                <option value="Istanbul" {% if location.city == 'Istanbul' %}selected{% endif %}>Istanbul</option>
+                                <option value="Rome" {% if location.city == 'Rome' %}selected{% endif %}>Rome</option>
+                                <option value="Madrid" {% if location.city == 'Madrid' %}selected{% endif %}>Madrid</option>
+                                <option value="Tokyo" {% if location.city == 'Tokyo' %}selected{% endif %}>Tokyo</option>
+                                <option value="Beijing" {% if location.city == 'Beijing' %}selected{% endif %}>Beijing</option>
+                                <option value="Sydney" {% if location.city == 'Sydney' %}selected{% endif %}>Sydney</option>
+                                <option value="Riyadh" {% if location.city == 'Riyadh' %}selected{% endif %}>Riyadh</option>
+                                <option value="Ottawa" {% if location.city == 'Ottawa' %}selected{% endif %}>Ottawa</option>
+                            </select>
+                            <div class="invalid-feedback">Please select a city.</div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="address" class="form-label">Address</label>
+                            <input type="text" class="form-control" id="address" name="address" value="{{ location.address }}" required>
+                            <div class="invalid-feedback">Please enter an address.</div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="capacity" class="form-label">Capacity</label>
+                            <input type="number" class="form-control" id="capacity" name="capacity" value="{{ location.capacity }}" required min="1">
+                            <div class="invalid-feedback">Please enter a valid capacity.</div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="price_per_day" class="form-label">Price Per Day</label>
+                            <input type="number" class="form-control" id="price_per_day" name="price_per_day" value="{{ location.pricePerDay }}" required step="0.01" min="0.01">
+                            <div class="invalid-feedback">Please enter a valid price.</div>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label for="description" class="form-label">Description</label>
+                            <div class="input-group">
+                                <textarea class="form-control" id="description" name="description" rows="3">{{ location.description }}</textarea>
+                                <button type="button" id="generateDescription" class="btn btn-outline-primary">
+                                    <i class="fas fa-magic me-2"></i>Generate with AI
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary">Update Location</button>
+                    <a href="{{ path('admin_conference_locations_list') }}" class="btn btn-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function validateForm() {
+    let isValid = true;
+    const requiredFields = ['name', 'city', 'address', 'capacity', 'price_per_day'];
+    
+    requiredFields.forEach(field => {
+        const input = document.getElementById(field);
+        if (!input.value.trim()) {
+            input.classList.add('is-invalid');
+            isValid = false;
+        } else {
+            input.classList.remove('is-invalid');
+        }
+    });
+
+    if (!isValid) {
+        alert('Please fill in all required fields');
+        return false;
+    }
+    return true;
+}
+
+// Add event listeners to remove invalid class on input
+document.querySelectorAll('input').forEach(input => {
+    input.addEventListener('input', function() {
+        if (this.value.trim()) {
+            this.classList.remove('is-invalid');
+        }
+    });
+});
+
+// Add this script section at the bottom
+<script>
+document.getElementById('generateDescription').addEventListener('click', function() {
+    const name = document.getElementById('name').value;
+    const city = document.getElementById('city').value;
+    const address = document.getElementById('address').value;
+    const capacity = document.getElementById('capacity').value;
+    const pricePerDay = document.getElementById('price_per_day').value;
+
+    if (!name || !city || !address || !capacity || !pricePerDay) {
+        alert('Please fill in all required fields first.');
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('name', name);
+    formData.append('city', city);
+    formData.append('address', address);
+    formData.append('capacity', capacity);
+    formData.append('price_per_day', pricePerDay);
+    formData.append('_token', '{{ csrf_token('generate_description') }}');
+
+    const button = this;
+    button.disabled = true;
+    button.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Generating...';
+
+    fetch('{{ path('generate_conference_description') }}', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            throw new Error(data.error);
+        }
+        document.getElementById('description').value = data.description;
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Generation failed: ' + error.message);
+    })
+    .finally(() => {
+        button.disabled = false;
+        button.innerHTML = '<i class="fas fa-magic me-2"></i>Generate with AI';
+    });
+});
+</script>
+
+{# Remove duplicate script tag and fix error handling #}
+<script>
+document.getElementById('generateDescription').addEventListener('click', function() {
+    const name = document.getElementById('name').value;
+    const city = document.getElementById('city').value;
+    const address = document.getElementById('address').value;
+    const capacity = document.getElementById('capacity').value;
+    const pricePerDay = document.getElementById('price_per_day').value;
+
+    if (!name || !city || !address || !capacity || !pricePerDay) {
+        alert('Please fill in all required fields first.');
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('name', name);
+    formData.append('city', city);
+    formData.append('address', address);
+    formData.append('capacity', capacity);
+    formData.append('price_per_day', pricePerDay);
+    formData.append('_token', '{{ csrf_token('generate_description') }}');
+
+    const button = this;
+    button.disabled = true;
+    button.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Generating...';
+
+    fetch('{{ path('generate_conference_description') }}', {
+        method: 'POST',
+        body: formData
+    })
+    .then(async response => {
+        if (!response.ok) {
+            const text = await response.text();
+            throw new Error(`HTTP ${response.status}: ${text.substring(0, 100)}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.error) throw new Error(data.error);
+        document.getElementById('description').value = data.description;
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert(error.message);
+    })
+    .finally(() => {
+        button.disabled = false;
+        button.innerHTML = '<i class="fas fa-magic me-2"></i>Generate with AI';
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,65 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Update Special Requests{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <h1>Special Requests</h1>
+        
+        <div class="card">
+            <div class="card-body">
+                <h3>Booking Summary</h3>
+                
+                {% if booking.flight %}
+                    <div class="mb-3">
+                        <h4>Flight</h4>
+                        <p>Airline: {{ booking.airlines }}</p>
+                        <p>Departure: {{ booking.departureTime|date('Y-m-d H:i') }}</p>
+                        <p>Return: {{ booking.backTime|date('Y-m-d H:i') }}</p>
+                    </div>
+                {% endif %}
+
+                {% if booking.hotel %}
+                    <div class="mb-3">
+                        <h4>Hotel</h4>
+                        <p>Name: {{ booking.hotelName }}</p>
+                        <p>Location: {{ booking.hotelLocation }}</p>
+                    </div>
+                {% endif %}
+
+                {% if booking.conferenceLocation %}
+                    <div class="mb-3">
+                        <h4>Conference Location</h4>
+                        <p>Name: {{ booking.conferenceName }}</p>
+                    </div>
+                {% endif %}
+
+                {% if booking.transport %}
+                    <div class="mb-3">
+                        <h4>Transport</h4>
+                        <p>Type: {{ booking.transport.type }}</p>
+                        <p>Description: {{ booking.transport.description }}</p>
+                    </div>
+                {% endif %}
+
+                <form action="{{ path('app_booking_update_final', {'id': booking.bookingId}) }}" method="POST">
+                    <div class="form-group mb-4">
+                        <label for="special_requests" class="form-label">Special Requests:</label>
+                        <textarea 
+                            name="special_requests" 
+                            id="special_requests" 
+                            class="form-control" 
+                            rows="5" 
+                            placeholder="Enter any special requests or requirements..."
+                        >{{ booking.specialRequests }}</textarea>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <button type="submit" class="btn btn-primary">Complete Booking</button>
+                        <a href="{{ path('app_bookings_list') }}" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

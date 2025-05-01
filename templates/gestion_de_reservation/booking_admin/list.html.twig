@@ -1,0 +1,84 @@
+{% extends 'gestion_de_reservation/booking_admin/base.html.twig' %}
+
+{% block title %}Admin - Bookings List
+{% endblock %}
+
+{% block admin %}
+	<div class="container mt-4">
+		<h1 class="mb-4">Bookings Management</h1>
+
+		{% for message in app.flashes('success') %}
+			<div class="alert alert-success">
+				{{ message }}
+			</div>
+		{% endfor %}
+
+		{% for message in app.flashes('error') %}
+			<div class="alert alert-danger">
+				{{ message }}
+			</div>
+		{% endfor %}
+
+		<form class="mb-4" method="get" action="{{ path('admin_bookings_list') }}">
+			<div class="input-group">
+				<input type="text" class="form-control" placeholder="Search by event name..." 
+						name="search" value="{{ searchTerm }}">
+				<button class="btn btn-primary" type="submit">
+					<i class="fas fa-search"></i> Search
+				</button>
+				{% if searchTerm %}
+					<a href="{{ path('admin_bookings_list') }}" class="btn btn-secondary">
+						<i class="fas fa-times"></i> Clear
+					</a>
+				{% endif %}
+			</div>
+		</form>
+
+		<div class="table-responsive">
+			<table class="table table-striped">
+				<thead>
+					<tr>
+						<th>ID</th>
+						<th>User Email</th>
+						<th>Event Name</th>
+						<th>Booking Date</th>
+						<th>Status</th>
+						<th>Total Price</th>
+						<th>Actions</th>
+					</tr>
+				</thead>
+				<style>
+					.container-fluid {
+						padding-left: 270px; /* أو حسب حجم السايدبار */
+						padding-top:50px
+					}</style>
+				<tbody>
+					{% for booking in bookings %}
+						<tr>
+							<td>{{ booking.id }}</td>
+							<td>{{ booking.userName }}</td>
+							<td>{{ booking.evenement ? booking.evenement.nom : 'N/A' }}</td>
+							<td>{{ booking.bookingDate|date('Y-m-d H:i') }}</td>
+							<td>
+								<span class="badge {% if booking.status == 'confirmed' %}bg-success{% elseif booking.status == 'not_confirmed' %}bg-danger{% else %}bg-warning{% endif %}">
+									{{ booking.status|default('pending') }}
+								</span>
+							</td>
+							<td>${{ booking.priceTotal }}</td>
+							<td>
+								<a href="{{ path('admin_booking_show', {'id': booking.id}) }}" class="btn btn-primary btn-sm">
+									<i class="fas fa-eye"></i>
+									View Details
+								</a>
+							</td>
+						</tr>
+					{% else %}
+						<tr>
+							<td colspan="6" class="text-center">No bookings found</td>
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</div>
+{% endblock %}

@@ -1,0 +1,106 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Event Details -
+	{{ evenement.nom }}
+{% endblock %}
+
+{% block body %}
+	<div class="container py-5">
+		<div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+			<h1 class="mb-5">Event Details</h1>
+		</div>
+
+		{# Flash messages #}
+		{% for message in app.flashes('success') %}
+			<div class="alert alert-success alert-dismissible fade show">
+				{{ message }}
+				<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+			</div>
+		{% endfor %}
+
+		{% for message in app.flashes('error') %}
+			<div class="alert alert-danger alert-dismissible fade show">
+				{{ message }}
+				<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+			</div>
+		{% endfor %}
+
+		<div class="card shadow-sm">
+			{% if evenement.imagePath %}
+				<img src="{{ asset('uploads/events/' ~ evenement.imagePath) }}" class="card-img-top" alt="{{ evenement.nom }}" style="height: 300px; object-fit: cover;">
+			{% else %}
+				<div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 300px;">
+					<i class="bi bi-calendar-event text-secondary" style="font-size: 5rem;"></i>
+				</div>
+			{% endif %}
+
+			<div class="card-body">
+				{# Add this below the card-title #}
+				<h2 class="card-title mb-4">{{ evenement.nom }}</h2>
+				<div class="mb-4">
+					<span class="badge bg-{{ evenement.validated ? 'success' : 'warning' }}">
+						{{ evenement.validated ? 'Approved' : 'Pending Approval' }}
+					</span>
+				</div>
+				<div class="row mb-4">
+					<div class="col-md-6">
+						<p>
+							<strong>
+								<i class="bi bi-tag me-2"></i>Type:</strong>
+							{{ evenement.type }}</p>
+						<p>
+							<strong>
+								<i class="bi bi-geo-alt me-2"></i>Location:</strong>
+							{{ evenement.lieuEvenement ?? 'Not specified' }}</p>
+						<p>
+							<strong>
+								<i class="bi bi-calendar-range me-2"></i>Dates:</strong>
+							{{ evenement.dateDebut|date('M d, Y') }}
+							-
+							{{ evenement.dateFin|date('M d, Y') }}</p>
+					</div>
+					<div class="col-md-6">
+						<p>
+							<strong>
+								<i class="bi bi-people me-2"></i>Guests:</strong>
+							{{ evenement.nombreInvite }}</p>
+						<p>
+							<strong>
+								<i class="bi bi-cash-coin me-2"></i>Budget:</strong>
+							{% if evenement.budgetPrevu %}
+								${{ evenement.budgetPrevu|number_format(2, '.', ',') }}
+							{% else %}
+								Not specified
+							{% endif %}
+						</p>
+					</div>
+				</div>
+
+				{% if evenement.description %}
+					<div class="mb-4">
+						<h5 class="text-primary">Description</h5>
+						<p>{{ evenement.description }}</p>
+					</div>
+				{% endif %}
+
+				{% if evenement.activities %}
+					<div class="mb-4">
+						<h5 class="text-primary">Planned Activities</h5>
+						<p>{{ evenement.activities }}</p>
+					</div>
+				{% endif %}
+
+				<div class="d-flex justify-content-between">
+					<a href="{{ path('app_evenement_index') }}" class="btn btn-outline-secondary">
+						<i class="bi bi-arrow-left me-1"></i>
+						Back to List
+					</a>
+					<a href="{{ path('app_evenement_select', {'event_id': evenement.id}) }}" class="btn btn-primary">
+						<i class="bi bi-check-circle me-1"></i>
+						Select This Event
+					</a>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}

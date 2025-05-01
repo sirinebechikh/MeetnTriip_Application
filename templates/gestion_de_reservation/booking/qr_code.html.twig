@@ -1,0 +1,49 @@
+{% extends 'Gestion_Evennement/base.html.twig' %}
+
+{% block title %}Booking QR Code - {{ booking.id }}{% endblock %}
+
+{% block body %}
+    <div class="container py-5 text-center">
+        <div class="card shadow-lg mx-auto" style="max-width: 500px;">
+            <div class="card-header bg-dark text-white">
+                <h2 class="mb-0">Booking Confirmation</h2>
+            </div>
+            <div class="card-body">
+                <div class="mb-4">
+                    <div class="qr-code-container p-3 border rounded bg-white">
+                        {{ qrCode|raw }}
+                    </div>
+                </div>
+                <div class="booking-details text-left">
+                    <p><strong>Booking ID:</strong> {{ booking.id }}</p>
+                    <p><strong>User:</strong> {{ booking.userName }}</p>
+                    <p><strong>Event:</strong> {{ booking.evenement.nom }}</p>
+                    <p><strong>Total Price:</strong> ${{ booking.priceTotal }}</p>
+                    <p><strong>Booking Date:</strong> {{ booking.bookingDate|date('Y-m-d H:i') }}</p>
+                </div>
+            </div>
+            <div class="card-footer bg-light">
+                <a href="{{ path('app_bookings_list') }}" class="btn btn-primary">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Bookings
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .qr-code-container {
+            max-width: 300px;
+            margin: 0 auto;
+        }
+        .qr-code-container svg {
+            width: 100% !important;
+            height: auto !important;
+        }
+        .booking-details p {
+            margin-bottom: 0.7rem;
+            padding: 0.5rem;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+        }
+    </style>
+{% endblock %}

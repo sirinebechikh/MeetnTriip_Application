@@ -1,0 +1,57 @@
+<!-- Navbar & Hero Start -->
+<div class="container-fluid nav-bar p-0">
+    <nav class="navbar navbar-expand-lg navbar-light bg-white px-4 px-lg-5 py-3 py-lg-0">
+        <a href="" class="navbar-brand p-0">
+            <h1 class="display-5 text-secondary m-0"><img src="{{ asset('img/brand-logo.png') }}" class="img-fluid" alt="">MeetNTrip</h1>
+            <!-- <img src="img/logo.png" alt="Logo"> -->
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+            <span class="fa fa-bars"></span>
+        </button>
+        
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <div class="navbar-nav ms-auto py-0">
+                <a href="{{ path('app_client') }}" class="nav-item nav-link active">Home</a>
+                <a href="about.html" class="nav-item nav-link">About</a>
+                <a href="service.html" class="nav-item nav-link">Service</a>
+                <div class="nav-item dropdown">
+                    <a href="#" class="nav-link" data-bs-toggle="dropdown"><span class="dropdown-toggle">Pages</span></a>
+                    <div class="dropdown-menu m-0">
+                        <!-- Show "Créer événement" for Admin and Client -->
+                             <a href="{{ path('client_evenements') }}" class="dropdown-item">Event_Create</a>
+                             <a href="{{ path('app_evenement_index') }}" class="dropdown-item">Event_Reservation</a>
+                             <a href="{{ path('app_bookings_list') }}" class="dropdown-item"> list of reservation </a>
+                             {% if app.user %}
+                             <a href="{{ path('bookings_by_user', {'userid': app.user.id}) }}" class="dropdown-item">Payment</a>
+                         {% endif %}
+                        
+                     
+                    
+                        <!-- Link for reclamation page -->
+                        <a href="#" class="dropdown-item">Réclamation</a>
+                    </div>
+                    
+                </div>
+                <a href="contact.html" class="nav-item nav-link">Contact</a>
+            </div>
+            
+            <button class="btn btn-primary btn-md-square border-secondary mb-3 mb-md-3 mb-lg-0 me-3" data-bs-toggle="modal" data-bs-target="#searchModal"><i class="fas fa-search"></i></button>
+            {% if app.user %}
+            <div class="nav-item dropdown">
+                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+                    <span>Welcome, {{ app.user.nom }}</span>
+                </a>
+                <div class="dropdown-menu m-0">
+                    <a href="#" class="dropdown-item">Profile</a>
+                    <a href="{{ path('app_logout') }}" class="dropdown-item">Logout</a>
+                </div>
+            </div>
+        {% else %}
+            <a href="{{ path('app_login') }}" class="btn btn-primary border-secondary rounded-pill py-2 px-4 px-lg-3 mb-3 mb-md-3 mb-lg-0 me-2">Login</a>
+            <a href="{{ path('app_register') }}" class="btn btn-outline-primary border-secondary rounded-pill py-2 px-4 px-lg-3 mb-3 mb-md-3 mb-lg-0">Register</a>
+        {% endif %}
+</div>
+         </div>
+    </nav>
+</div>
+<!-- Navbar & Hero End -->

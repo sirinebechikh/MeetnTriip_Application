@@ -1,0 +1,131 @@
+{% extends 'Gestion_Evennement/base.html.twig' %}
+
+{% block title %}Event Management - MeetNTrip
+{% endblock %}
+
+{% block body %}
+	<div class="container py-5">
+		<div class="text-center mb-5">
+			<h1 class="display-5 fw-bold text-secondary mb-3">Your Events</h1>
+			<p class="lead text-muted">Manage and book services for your upcoming events</p>
+		</div>
+
+		{# Add Filter Buttons #}
+		<div class="mb-4 text-center">
+			{% set eventTypes = {
+				'All': null,
+				'Conference': 'Conference',
+				'Seminars & Workshops': 'Seminars & Workshops', 
+				'Trade Shows': 'Trade Shows',
+				'Team Building': 'Team-Building Events',
+				'Product Launches': 'Product Launches',
+				'Networking': 'Networking Events',
+				'Award Ceremonies': 'Award Ceremonies'
+			} %}
+			
+			<div class="btn-group flex-wrap gap-2" role="group">
+				{% for label,value in eventTypes %}
+					<a href="{{ path('app_evenement_index', {'type': value}) }}" 
+					   class="btn btn-outline-primary {{ (currentFilter == value) or (value is null and currentFilter is null) ? 'active' : '' }}">
+						{{ label }}
+					</a>
+				{% endfor %}
+			</div>
+		</div>
+
+		{# Flash messages #}
+		{% for message in app.flashes('success') %}
+			<div class="alert alert-success alert-dismissible fade show">
+				{{ message }}
+				<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+			</div>
+		{% endfor %}
+
+		{% for message in app.flashes('error') %}
+			<div class="alert alert-danger alert-dismissible fade show">
+				{{ message }}
+				<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+			</div>
+		{% endfor %}
+
+		<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+			{% for event in evenements %}
+				<div class="col">
+					<div class="card h-100 border-0 shadow-lg hover-shadow-lg transition-all">
+						{% if event.imagePath %}
+							<div class="card-img-top overflow-hidden" style="height: 200px;">
+								<img src="{{ asset('uploads/events/' ~ event.imagePath) }}" 
+									 class="img-fluid w-100 h-100 object-fit-cover"
+									 alt="{{ event.nom }}">
+							</div>
+						{% else %}
+							<div class="card-img-top bg-gradient-primary text-white d-flex align-items-center justify-content-center" 
+								 style="height: 200px;">
+								<div class="text-center">
+									<i class="bi bi-calendar-event display-4"></i>
+									<h3 class="mt-2">{{ event.nom }}</h3>
+								</div>
+							</div>
+						{% endif %}
+
+						<div class="card-body pb-0">
+							<div class="d-flex align-items-center mb-3">
+								<span class="badge bg-primary me-2">{{ event.type }}</span>
+								<small class="text-muted">
+									<i class="bi bi-people me-1"></i>
+									{{ event.nombreInvite }} guests
+								</small>
+							</div>
+
+							<h4 class="card-title fw-bold text-dark mb-3">{{ event.nom }}</h4>
+							
+							<div class="event-details">
+								<div class="d-flex align-items-center mb-2">
+									<i class="bi bi-geo-alt text-primary me-2"></i>
+									<span class="text-muted">{{ event.lieuEvenement }}</span>
+								</div>
+								
+								<div class="d-flex align-items-center mb-2">
+									<i class="bi bi-calendar-range text-primary me-2"></i>
+									<div>
+										<small class="text-muted d-block">{{ event.dateDebut|date('M d, Y') }}</small>
+										<small class="text-muted">to {{ event.dateFin|date('M d, Y') }}</small>
+									</div>
+								</div>
+								
+								{% if event.budgetPrevu %}
+								<div class="d-flex align-items-center">
+									<i class="bi bi-currency-dollar text-primary me-2"></i>
+									<span class="text-muted">Budget: ${{ event.budgetPrevu|number_format(2, '.', ',') }}</span>
+								</div>
+								{% endif %}
+							</div>
+						</div>
+
+						<div class="card-footer bg-transparent border-0 pt-0 pb-4">
+							<div class="d-grid gap-2">
+								<a href="{{ path('app_evenement_select', {'id': event.id}) }}" 
+								   class="btn btn-primary btn-lg rounded-pill">
+									<i class="bi bi-check-circle me-2"></i>
+									Select Event
+								</a>
+								
+								<a href="{{ path('app_evenement_ai_booking', {'id': event.id}) }}" 
+								   class="btn btn-success btn-lg rounded-pill">
+									<i class="bi bi-robot me-2"></i>
+									AI Booking
+								</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			{% else %}
+				{# No events message ... #}
+			{% endfor %}
+		</div>
+	</div>
+{% endblock %}
+
+ 
+
+ 

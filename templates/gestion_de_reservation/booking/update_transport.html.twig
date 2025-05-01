@@ -1,0 +1,63 @@
+{% extends 'Gestion_Evennement/base.html.twig' %}
+
+{% block title %}Update Transport Selection{% endblock %}
+
+{% block body %}
+    <div class="container py-5">
+        <h1 class="text-center mb-4 wow fadeInUp">Select Transport for {{ eventLocation }}</h1>
+
+        <div class="row g-4">
+            {% for transport in transports %}
+                <div class="col-lg-4 col-md-6 transport-card">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-img-top position-relative overflow-hidden" style="height: 200px;">
+                            <img src="{% for t in transportImages %}{% if t.type == transport.type %}{{ t.image }}{% endif %}{% endfor %}" 
+                                 alt="{{ transport.type }}" 
+                                 class="img-fluid" 
+                                 style="object-fit: cover; width: 100%; height: 100%">
+                        </div>
+
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title text-primary text-capitalize">{{ transport.type }}</h5>
+                            
+                            <div class="card-text mb-3">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div class="badge bg-primary bg-opacity-10 text-primary p-2">
+                                        <i class="fas fa-tag me-1"></i>{{ transport.type }}
+                                    </div>
+                                    <h4 class="text-success mb-0">
+                                        ${{ transport.price|number_format(2) }}
+                                    </h4>
+                                </div>
+
+                                {% if transport.description %}
+                                    <div class="bg-light p-3 rounded">
+                                        <h6 class="text-primary mb-3">
+                                            <i class="fas fa-info-circle me-2"></i>Description
+                                        </h6>
+                                        <p class="mb-0">{{ transport.description }}</p>
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="mt-auto">
+                                <form action="{{ path('app_booking_update_process', {'id': booking.bookingId}) }}" method="POST" class="w-100">
+                                    <input type="hidden" name="transport_id" value="{{ transport.transportId }}">
+                                    <input type="hidden" name="transport_price" value="{{ transport.price }}">
+                                    <button type="submit" class="btn btn-primary w-100">
+                                        <i class="fas fa-check-circle me-1"></i>
+                                        Select Transport
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="mt-4 text-center">
+            <a href="{{ path('app_bookings_list') }}" class="btn btn-outline-secondary btn-lg px-5">Cancel</a>
+        </div>
+    </div>
+{% endblock %}

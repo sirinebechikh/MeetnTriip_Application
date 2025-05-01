@@ -1,0 +1,130 @@
+{% extends 'Gestion_Evennement/base.html.twig' %}
+
+{% block title %}Select Transport Option - MeetNTrip
+{% endblock %}
+
+{% block body %}
+	<!-- Spinner Start -->
+	<div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+		<div class="spinner-border text-secondary" style="width: 3rem; height: 3rem;" role="status">
+			<span class="sr-only">Loading...</span>
+		</div>
+	</div>
+	<!-- Spinner End -->
+
+	<div class="container py-5">
+		<h1 class="text-center mb-5 wow fadeInUp" data-wow-delay="0.1s">Select Transport Option</h1>
+
+		<div class="bg-light rounded p-4 mb-5 wow fadeInUp" data-wow-delay="0.2s">
+			<div class="row">
+				<div class="col-md-6">
+					<h4 class="text-primary mb-3">Event Details</h4>
+					<p>
+						<i class="far fa-calendar-alt me-2"></i>
+						<strong>Dates:</strong>
+						{{ date_debut }}
+						to
+						{{ date_fin }}</p>
+					<p>
+						<i class="fas fa-users me-2"></i>
+						<strong>Guests:</strong>
+						{{ nombre_invite }}</p>
+				</div>
+				<div class="col-md-6">
+					<h4 class="text-primary mb-3">Current Selection</h4>
+					<p>
+						<i class="fas fa-plane me-2"></i>
+						<strong>Flight:</strong>
+						#{{ flight_id }}</p>
+					<p>
+						<i class="fas fa-hotel me-2"></i>
+						<strong>Hotel:</strong>
+						#{{ hotel_id }}</p>
+					<p>
+						<i class="fas fa-building me-2"></i>
+						<strong>Venue:</strong>
+						#{{ location_id }}</p>
+				</div>
+			</div>
+		</div>
+
+		{% if transports is empty %}
+			<div class="col-12">
+				<div class="alert alert-info text-center py-4 wow fadeInUp" data-wow-delay="0.1s">
+					<i class="fas fa-bus-slash fa-3x text-primary mb-3"></i>
+					<h4>No transport options available</h4>
+					<p class="mb-0">Please check back later or contact support</p>
+				</div>
+			</div>
+		{% else %}
+			<div class="row g-4">
+				{% for transport in transports %}
+					<div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="{{ 0.1 + (loop.index * 0.1) }}s">
+						<div class="card h-100 shadow-sm">
+							<div class="card-img-top d-flex align-items-center justify-content-center" style="height: 200px; overflow: hidden;">
+								<img src="{% for t in transportImages %}{% if t.type == transport.type %}{{ t.image }}{% endif %}{% endfor %}" 
+									 alt="{{ transport.type }}" 
+									 class="img-fluid" 
+									 style="object-fit: cover; width: 100%; height: 100%;">
+							</div>
+
+							<div class="card-body d-flex flex-column">
+								<h5 class="card-title text-capitalize text-primary">{{ transport.type }}</h5>
+								<div class="card-text mb-3">
+									<div class="d-flex justify-content-between align-items-center mb-3">
+										<div class="badge bg-primary bg-opacity-10 text-primary p-2">
+											<i class="fas fa-tag me-1"></i>{{ transport.type }}
+										</div>
+										<h4 class="text-success mb-0">
+											${{ transport.price|number_format(2) }}
+										</h4>
+									</div>
+
+									{% if transport.description %}
+										<div class="bg-light p-3 rounded">
+											<h6 class="text-primary mb-3">
+												<i class="fas fa-info-circle me-2"></i>Description
+											</h6>
+											<p class="mb-0">{{ transport.description }}</p>
+										</div>
+									{% endif %}
+								</div>
+
+								<div class="mt-auto">
+									<a href="{{ path('app_transport_select', { 
+										'transport_id': transport.transportId, 
+										'hotel_id': hotel_id, 
+										'hotel_price': hotel_price, 
+										'flight_id': flight_id, 
+										'flight_price': flight_price, 
+										'location_id': location_id, 
+										'userid': userid, 
+										'id_evenement': id_evenement, 
+										'date_debut': date_debut, 
+										'date_fin': date_fin, 
+										'nombre_invite': nombre_invite 
+									}) }}" class="btn btn-primary w-100">
+										<i class="fas fa-check-circle me-1"></i>
+										Select Transport
+									</a>
+								</div>
+							</div>
+						</div>
+					</div>
+				{% endfor %}
+			</div>
+		{% endif %}
+	</div>
+{% endblock %}
+
+{% block javascripts %}
+	{{ parent() }}
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="{{ asset('assets/lib/wow/wow.min.js') }}"></script>
+	<script src="{{ asset('assets/lib/easing/easing.min.js') }}"></script>
+	<script src="{{ asset('assets/lib/waypoints/waypoints.min.js') }}"></script>
+	<script src="{{ asset('assets/lib/counterup/counterup.min.js') }}"></script>
+	<script src="{{ asset('assets/lib/owlcarousel/owl.carousel.min.js') }}"></script>
+	<script src="{{ asset('assets/js/main.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,125 @@
+{% extends 'Gestion_Evennement/base.html.twig' %}
+
+{% block title %}Update Conference Location{% endblock %}
+
+{% block body %}
+    <div class="container py-5">
+        <h1 class="text-center mb-5 wow fadeInUp">Select Conference Location in {{ eventLocation }}</h1>
+        
+        <div class="row g-4">
+            {% for location in locations %}
+                {% set locationData = conferenceImages|filter(l => l.name == location.name)|first %}
+                <div class="col-lg-4 col-md-6 wow fadeInUp">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-img-top position-relative overflow-hidden" style="height: 200px;">
+                            <img src="{{ locationData.fontimage ?? '/images/default-conference.jpg' }}" 
+                                 alt="{{ location.name }}" 
+                                 class="img-fluid"
+                                 style="object-fit: cover; width: 100%; height: 100%">
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title text-primary">{{ location.name }}</h5>
+                            <div class="card-text mb-3">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div class="badge bg-primary bg-opacity-10 text-primary p-2">
+                                        <i class="fas fa-map-marker-alt me-1"></i>{{ location.city }}
+                                    </div>
+                                    <div class="text-end">
+                                        <div class="text-muted small">per day</div>
+                                        <h4 class="text-success mb-0">${{ location.pricePerDay|number_format(2) }}</h4>
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-light p-3 rounded mb-3">
+                                    <p class="mb-0">{{ location.description|slice(0, 100) }}...</p>
+                                </div>
+                            </div>
+
+                            <div class="mt-auto">
+                                <button class="btn btn-outline-primary w-100 mb-2" 
+                                        onclick="showLocationDetails('{{ location.locationId }}')">
+                                    <i class="fas fa-images me-1"></i>
+                                    View Details
+                                </button>
+                                <form action="{{ path('app_booking_update_process', {'id': booking.bookingId}) }}" method="POST">
+                                    <input type="hidden" name="location_id" value="{{ location.locationId }}">
+                                    <input type="hidden" name="conference_price" value="{{ location.pricePerDay }}">
+                                    <button type="submit" class="btn btn-primary w-100">
+                                        <i class="fas fa-check-circle me-1"></i>
+                                        Select Venue
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Location Details Modal -->
+                <div class="modal fade" id="locationModal-{{ location.locationId }}" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">{{ location.name }}</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                {% if locationData %}
+                                <div id="carousel-{{ location.locationId }}" class="carousel slide mb-4" data-bs-ride="carousel">
+                                    <div class="carousel-inner">
+                                        {% for image in locationData.images %}
+                                            <div class="carousel-item {% if loop.first %}active{% endif %}">
+                                                <img src="{{ image }}" class="d-block w-100 rounded" 
+                                                     alt="Venue image {{ loop.index }}" 
+                                                     style="height: 400px; object-fit: cover;">
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                    <button class="carousel-control-prev" type="button" data-bs-target="#carousel-{{ location.locationId }}" data-bs-slide="prev">
+                                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                    </button>
+                                    <button class="carousel-control-next" type="button" data-bs-target="#carousel-{{ location.locationId }}" data-bs-slide="next">
+                                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                    </button>
+                                </div>
+                                {% endif %}
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h5><i class="fas fa-map-marker-alt text-primary me-2"></i>Address</h5>
+                                        <p>{{ location.address }}</p>
+                                        
+                                        <h5><i class="fas fa-users text-info me-2"></i>Capacity</h5>
+                                        <p>{{ location.capacity }} people</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h5><i class="fas fa-info-circle text-primary me-2"></i>Full Description</h5>
+                                        <p>{{ location.description }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        
+        <div class="text-center mt-5">
+            <a href="{{ path('app_booking_update_select', {'id': booking.bookingId, 'type': 'transport'}) }}" 
+               class="btn btn-primary btn-lg me-3">
+                Next: Select Transport
+            </a>
+            <a href="{{ path('app_bookings_list') }}" class="btn btn-secondary btn-lg">
+                Cancel
+            </a>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+    function showLocationDetails(locationId) {
+        new bootstrap.Modal(document.getElementById(`locationModal-${locationId}`)).show();
+    }
+    </script>
+{% endblock %}
