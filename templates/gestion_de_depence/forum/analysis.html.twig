@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}AI Analysis Report{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>AI Analysis Report</h1>
+        <button class="btn btn-primary" onclick="window.print()">
+            <i class="fas fa-print"></i> Print Report
+        </button>
+    </div>
+    
+    <div class="card">
+        <div class="card-body">
+            <pre class="analysis-content">{{ analysis|raw }}</pre>
+        </div>
+    </div>
+</div>
+
+<style>
+.analysis-content {
+    white-space: pre-wrap;
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    font-size: 16px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 5px;
+}
+</style>
+{% endblock %}

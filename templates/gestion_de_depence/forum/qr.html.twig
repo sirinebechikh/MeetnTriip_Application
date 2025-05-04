@@ -1,0 +1,72 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Forum Statistics QR Code{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Forum Statistics QR Code</h3>
+                </div>
+                <div class="card-body text-center">
+                    <div id="qrcode" style="min-width: 256px; min-height: 256px; margin: 0 auto;"></div>
+                    <p class="mt-3">Scan this QR code to view forum statistics</p>
+                    <p class="text-muted">URL: {{ url }}</p>
+                    <button class="btn btn-primary mt-3" id="downloadBtn">
+                        <i class="fas fa-download"></i> Download QR Code
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const qrContainer = document.getElementById('qrcode');
+    const url = "{{ url }}";
+    
+    if (!url || url === "http:///") {
+        qrContainer.innerHTML = `
+            <div class="alert alert-danger">
+                Invalid URL: Please check the server configuration
+            </div>
+        `;
+        return;
+    }
+
+    try {
+        // Clear previous content
+        qrContainer.innerHTML = '';
+        
+        // Create canvas container
+        const canvasContainer = document.createElement('div');
+        canvasContainer.style.display = 'inline-block';
+        qrContainer.appendChild(canvasContainer);
+
+        // Generate QR code with error correction
+        new QRCode(canvasContainer, {
+            text: url,
+            width: 256,
+            height: 256,
+            colorDark: "#000000",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.H
+        });
+
+    } catch (error) {
+        console.error('QR Code Error:', error);
+        qrContainer.innerHTML = `
+            <div class="alert alert-danger">
+                QR Generation Failed: ${error.message}
+            </div>
+        `;
+    }
+});
+</script>
+{% endblock %}

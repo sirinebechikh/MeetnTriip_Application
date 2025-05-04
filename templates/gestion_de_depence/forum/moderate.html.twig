@@ -1,0 +1,115 @@
+{% extends 'Gestion_Evennement/admin/base.html.twig' %}
+
+{% block title %}Moderate Posts{% endblock %}
+
+{% block admin %}
+<div class="container mt-4">
+    <h1 class="mb-4">Pending Posts Moderation</h1>
+
+    {% if posts is empty %}
+        <div class="alert alert-info">No pending posts to moderate.</div>
+    {% else %}
+        <div class="row">
+            {% for post in posts %}
+                <div class="col-md-12 mb-4" id="post-{{ post.idPost }}">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Post by {{ post.user.nom }}</h5>
+                            <p class="card-text">{{ post.content }}</p>
+                            <p class="text-muted">Type: {{ post.type }}</p>
+                            
+                            {% if post.mediaPath %}
+                                <div class="mb-3">
+                                    {% if post.mediaType == 'image' %}
+                                        <img src="{{ asset('uploads/forum/' ~ post.mediaPath) }}" class="img-fluid" alt="Post media">
+                                    {% else %}
+                                        <video controls class="w-100">
+                                            <source src="{{ asset('uploads/forum/' ~ post.mediaPath) }}" type="video/mp4">
+                                            Your browser does not support the video tag.
+                                        </video>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+
+                            <div class="d-flex justify-content-end gap-2">
+                                <form class="d-inline" onsubmit="return handleModeration(event, 'approve', {{ post.idPost }})">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('approve-post' ~ post.idPost) }}">
+                                    <button type="submit" class="btn btn-success">
+                                        <i class="fas fa-check"></i> Approve
+                                    </button>
+                                </form>
+                                <form class="d-inline" onsubmit="return handleModeration(event, 'reject', {{ post.idPost }})">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('reject-post' ~ post.idPost) }}">
+                                    <button type="submit" class="btn btn-danger">
+                                        <i class="fas fa-times"></i> Reject
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script>
+function handleModeration(event, action, postId) {
+    event.preventDefault();
+    const form = event.target;
+    const token = form.querySelector('input[name="_token"]').value;
+
+    fetch(`/forum/admin/post/${postId}/${action}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-Requested-With': 'XMLHttpRequest' // Add this header
+        },
+        body: `_token=${encodeURIComponent(token)}`
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            const postElement = document.getElementById(`post-${postId}`);
+            if (postElement) {
+                postElement.remove();
+                
+                // Show status message without reloading
+                const alertDiv = document.createElement('div');
+                alertDiv.className = `alert alert-success fixed-top m-3`;
+                alertDiv.innerHTML = `
+                    ${data.message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                `;
+                document.body.prepend(alertDiv);
+                
+                // Check if there are any posts left
+                if (document.querySelectorAll('[id^="post-"]').length === 0) {
+                    document.querySelector('.alert-info').style.display = 'block';
+                }
+            }
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-danger fixed-top m-3`;
+        alertDiv.innerHTML = `
+            Error processing request: ${error.message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        `;
+        document.body.prepend(alertDiv);
+    });
+
+    return false;
+}
+</script>
+{% endblock %}

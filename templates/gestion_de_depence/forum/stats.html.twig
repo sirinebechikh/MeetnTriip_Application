@@ -1,0 +1,265 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Forum Statistics{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Forum Statistics</h1>
+        <div>
+            <button class="btn btn-purple me-2" onclick="location.href='{{ path('admin_generate_stats_analysis') }}'">
+                <i class="fas fa-robot"></i> AI Analysis
+            </button>
+            <a href="{{ path('admin_forum_stats_qr') }}" class="btn btn-info me-2">
+                <i class="fas fa-qrcode"></i> QR Code
+            </a>
+            <a href="{{ path('admin_forum_stats_pdf') }}" class="btn btn-danger">
+                <i class="fas fa-file-pdf"></i> Download PDF
+            </a>
+        </div>
+    </div>
+
+    <!-- Add this modal at bottom of body -->
+    <div class="modal fade" id="aiModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">AI Analysis</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="loading" class="text-center d-none">
+                        <div class="spinner-border text-primary" role="status"></div>
+                        <p class="mt-2">Generating analysis...</p>
+                    </div>
+                    <div id="analysisResult" class="d-none">
+                        <textarea id="aiOutput" class="form-control" rows="8" readonly></textarea>
+                        <button class="btn btn-primary mt-3" onclick="copyAnalysis()">
+                            <i class="fas fa-copy"></i> Copy to Clipboard
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- QR Code Modal -->
+    <div class="modal fade" id="qrModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Statistics QR Code</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <div id="qrcode"></div>
+                    <p class="mt-3">Scan this QR code to view forum statistics</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" onclick="downloadQRCode()">
+                        <i class="fas fa-download"></i> Download QR Code
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Overview Cards -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Total Posts</h5>
+                    <h2 class="card-text">{{ totalPosts }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Total Comments</h5>
+                    <h2 class="card-text">{{ totalComments }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Posts by Type -->
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Posts by Type</h5>
+                    <canvas id="postsByTypeChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Most Commented Posts -->
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Most Commented Posts</h5>
+                    <ul class="list-group list-group-flush">
+                        {% for post in mostCommentedPosts %}
+                            <li class="list-group-item">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="text-truncate">{{ post.content|slice(0, 30) }}...</span>
+                                    <span class="badge bg-primary rounded-pill">{{ post.commentCount }} comments</span>
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Most Liked Posts -->
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Most Liked Posts</h5>
+                    <ul class="list-group list-group-flush">
+                        {% for post in mostLikedPosts %}
+                            <li class="list-group-item">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="text-truncate">{{ post.content|slice(0, 30) }}...</span>
+                                    <span class="badge bg-success rounded-pill">{{ post.likeCount }} likes</span>
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block javascripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode.js@1.0.0/qrcode.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Posts by Type Chart
+    const postsByTypeCtx = document.getElementById('postsByTypeChart').getContext('2d');
+    new Chart(postsByTypeCtx, {
+        type: 'pie',
+        data: {
+            labels: [{% for post in postsByType %}'{{ post.type }}',{% endfor %}],
+            datasets: [{
+                data: [{% for post in postsByType %}{{ post.count }},{% endfor %}],
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.8)',
+                    'rgba(54, 162, 235, 0.8)',
+                    'rgba(255, 206, 86, 0.8)'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+});
+
+// Add AI Analysis functionality
+async function generateAnalysis() {
+    const modal = new bootstrap.Modal(document.getElementById('aiModal'));
+    const loading = document.getElementById('loading');
+    const result = document.getElementById('analysisResult');
+    const output = document.getElementById('aiOutput');
+    
+    try {
+        console.log('Starting AI analysis...');
+        loading.classList.remove('d-none');
+        result.classList.add('d-none');
+        output.value = '';
+        modal.show();
+
+        const response = await fetch('{{ path('admin_generate_stats_analysis') }}', {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest' // Add this header
+            }
+        });
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || `Server error: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        if (data.analysis) {
+            output.value = data.analysis;
+            result.classList.remove('d-none');
+        } else {
+            throw new Error('No analysis content received');
+        }
+        
+    } catch (error) {
+        console.error('AI Analysis error:', error);
+        output.value = `Error: ${error.message}`;
+        result.classList.remove('d-none');
+        alert(`Analysis failed: ${error.message}`);
+    } finally {
+        loading.classList.add('d-none');
+    }
+}
+
+function copyAnalysis() {
+    const output = document.getElementById('aiOutput');
+    output.select();
+    document.execCommand('copy');
+    
+    // Show a temporary "Copied!" message
+    const copyBtn = document.querySelector('.modal-body .btn-primary');
+    const originalText = copyBtn.innerHTML;
+    copyBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+    setTimeout(() => {
+        copyBtn.innerHTML = originalText;
+    }, 2000);
+}
+
+// Add QR Code functionality
+function generateQRCode() {
+    const modal = new bootstrap.Modal(document.getElementById('qrModal'));
+    const qrContainer = document.getElementById('qrcode');
+    
+    // Clear previous QR code
+    qrContainer.innerHTML = '';
+    
+    // Get current URL
+    const currentUrl = window.location.href;
+    
+    // Generate QR code
+    new QRCode(qrContainer, {
+        text: currentUrl,
+        width: 256,
+        height: 256,
+        colorDark: "#000000",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.H
+    });
+    
+    modal.show();
+}
+
+function downloadQRCode() {
+    const qrCanvas = document.querySelector('#qrcode canvas');
+    if (!qrCanvas) return;
+    
+    // Create a temporary link
+    const link = document.createElement('a');
+    link.download = 'forum-stats-qrcode.png';
+    link.href = qrCanvas.toDataURL('image/png');
+    link.click();
+}
+</script>
+{% endblock %}
+{% endblock %}
+
+{# Remove the AI Modal and related JavaScript code #}
