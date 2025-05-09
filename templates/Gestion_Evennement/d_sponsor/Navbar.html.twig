@@ -11,46 +11,20 @@
 			</button>
 			<div class="collapse navbar-collapse" id="navbarCollapse">
 				<div class="navbar-nav ms-auto py-0">
-                    <a href="{{ path('app_client') }}" class="nav-item nav-link active">Home</a>
+                    
                    
                     <div class="nav-item dropdown">
                         <a href="#" class="nav-link" data-bs-toggle="dropdown">
-                            <span class="dropdown-toggle">Event</span>
+                            <span class="dropdown-toggle">COLABORATE</span>
                         </a>
                         <div class="dropdown-menu m-0">
-                            <!-- Show "Créer événement" for Admin and Client -->
-                             <a href="{{ path('client_evenements') }}" class="dropdown-item">Manegement_Event</a>
-							   <a href="{{ path('client_evenements_confirmed') }}" class="dropdown-item">Confirmed Events</a>
+                     
+                            <a href="{{ path('sponsor_demandes') }}" class="dropdown-item">Event_Sponsor</a>
  
-						 
-                        </div>
-                    </div>    
-					<div class="nav-item dropdown">
-                        <a href="#" class="nav-link" data-bs-toggle="dropdown">
-                            <span class="dropdown-toggle">Reservation</span>
-                        </a>
-                        <div class="dropdown-menu m-0">
-                            <!-- Show "Créer événement" for Admin and Client -->
-                             
-                             <a href="{{ path('app_evenement_index') }}" class="dropdown-item">Event_Reservation</a>
-                             <a href="{{ path('app_bookings_list') }}" class="dropdown-item"> list of reservation </a>
-         
 						 
                         </div>
                     </div>
-					<div class="nav-item dropdown">
-                        <a href="#" class="nav-link" data-bs-toggle="dropdown">
-                            <span class="dropdown-toggle">Payment</span>
-                        </a>
-                        <div class="dropdown-menu m-0">
-                        
-                     {% if app.user %}
-                                <a href="{{ path('bookings_by_user', {'userid': app.user.id}) }}" class="dropdown-item">Payment</a>
-                            {% endif %}
- 
-						 
-                        </div>
-                    </div><div class="nav-item dropdown">
+                     <div class="nav-item dropdown">
                         <a href="#" class="nav-link" data-bs-toggle="dropdown">
                             <span class="dropdown-toggle">Forum</span>
                         </a>
@@ -61,6 +35,8 @@
 						 
                         </div>
                     </div>
+                     
+ 
 				</div><div class="nav-item dropdown">
 					<a href="#" class="nav-link" data-bs-toggle="dropdown">
 						<span class="dropdown-toggle">Reclam&Reponse</span>
@@ -73,12 +49,12 @@
 					 
 					</div>
 				</div>
-                 </div>
+              
                  
                 {% if app.user %}
                     <div class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-                            <span>Welcome,{{ app.user.image }}, {{ app.user.nom }}</span>
+                            <span>Welcome  {{ app.user.nom }}</span>
                         </a>
                         <div class="dropdown-menu m-0">
 						

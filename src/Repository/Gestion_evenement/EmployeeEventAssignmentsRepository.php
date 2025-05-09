@@ -1,23 +1,23 @@
 <?php
 
-namespace App\Repository;
+namespace App\Repository\Gestion_evenement;
 
-use App\Entity\Evenement;
+use App\Entity\Gestion_Evenement\EmployeeEventAssignments;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<Evenement>
+ * @extends ServiceEntityRepository<EmployeeEventAssignments>
  */
-class EvenementRepository extends ServiceEntityRepository
+class EmployeeEventAssignmentsRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Evenement::class);
+        parent::__construct($registry, EmployeeEventAssignments::class);
     }
 
     //    /**
-    //     * @return Evenement[] Returns an array of Evenement objects
+    //     * @return EmployeeEventAssignments[] Returns an array of EmployeeEventAssignments objects
     //     */
     //    public function findByExampleField($value): array
     //    {
@@ -31,7 +31,7 @@ class EvenementRepository extends ServiceEntityRepository
     //        ;
     //    }
 
-    //    public function findOneBySomeField($value): ?Evenement
+    //    public function findOneBySomeField($value): ?EmployeeEventAssignments
     //    {
     //        return $this->createQueryBuilder('e')
     //            ->andWhere('e.exampleField = :val')
@@ -40,4 +40,6 @@ class EvenementRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+ 
+
 }

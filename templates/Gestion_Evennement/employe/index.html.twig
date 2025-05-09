@@ -1,0 +1,181 @@
+{% extends 'Gestion_Evennement/employe/base.html.twig' %}
+
+{% block emp %}
+ <!-- Affichage des messages flash -->
+    {% for message in app.flashes('success2') %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <strong>Success!</strong> {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+
+    {% for message in app.flashes('error2') %}
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <strong>Error!</strong> {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+<div class="container mt-4">
+    <h2 class="mb-4"> Affectation des employés pour l'événement : <strong>{{ event.nom }}</strong></h2>
+
+    <!-- Liste des employés disponibles -->
+    <h4> Employés disponibles de votre entreprise</h4>
+    <table id="available-employees" class="table table-bordered table-striped">
+        <thead class="table-dark">
+            <tr><th>Nom</th><th>Email</th><th>Entreprise</th><th>Action</th></tr>
+        </thead>
+        <tbody>
+            {% for emp in employees %}
+                <tr data-id="{{ emp.id }}">
+                    <td>{{ emp.nom }}</td>
+                    <td>{{ emp.email }}</td>
+                    <td>{{ emp.nameCompany }}</td>
+                    <td><button type="button" class="btn btn-success add-btn">➕ Ajouter</button></td>
+                </tr>
+            {% else %}
+                <tr><td colspan="4">Aucun employé disponible pour votre entreprise.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <hr class="my-4">
+
+    <!-- Formulaire de validation des assignations -->
+    <form method="post" action="{{ path('submit_employee_assignments', { id: event.id }) }}">
+        <input type="hidden" name="assignments" id="assignmentsInput">
+
+        <h4>Employés sélectionnés</h4>
+        <table id="selected-employees" class="table table-hover" >
+            <thead class="table-primary">
+                <tr>
+                    <th>Nom</th>
+                    <th>Rôle</th>
+                     <th>Création</th>
+                    <th>Dernière Mise à Jour</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {# Les lignes sélectionnées s’ajouteront ici dynamiquement #}
+            </tbody>
+        </table>
+
+        <button type="submit" class="btn btn-primary mt-3"> Valider l'affectation</button>
+    </form>
+</div>
+
+<script>
+    const roles = [
+        'Photographer', 
+        'Security', 
+        'Waiter', 
+        'Coordinator', 
+        'Host',
+        'Technical Manager',
+        'Master of Ceremonies',
+        'Reception Manager',
+        'Communication Officer',
+        'Sound/Light Technician'
+    ];
+
+     const assignments = [];
+
+    // Fonction pour générer l'heure actuelle au format compatible datetime-local
+    function getNowDatetimeLocal() {
+        return new Date().toISOString().slice(0, 16); // format: yyyy-MM-ddTHH:mm
+    }
+
+    document.querySelectorAll('.add-btn').forEach(btn => {
+        btn.addEventListener('click', function () {
+            const row = this.closest('tr');
+            const id = row.dataset.id;
+            const name = row.children[0].textContent;
+            row.remove(); // remove from available list
+
+            const now = getNowDatetimeLocal();
+
+            const newRow = document.createElement('tr');
+
+            newRow.innerHTML = `
+                <td>${name}</td>
+                <td>
+                    <select class="form-select role-select" required>
+                        <option value="" disabled selected>Select a role</option>
+                        ${roles.map(role => `<option value="${role}">${role}</option>`).join('')}
+                    </select>
+                </td>
+                
+                <td><input type="datetime-local" class="form-control date-start" value="${now}" required></td>
+                <td><input type="datetime-local" class="form-control date-end" value="${now}" required></td>
+                <td><button type="button" class="btn btn-danger remove-btn">❌</button></td>
+            `;
+
+            newRow.dataset.employeeId = id;
+
+            document.querySelector('#selected-employees tbody').appendChild(newRow);
+
+            // Remove employee from the selected list
+            newRow.querySelector('.remove-btn').addEventListener('click', function () {
+                newRow.remove();
+            });
+        });
+    });
+
+    // 🎯 Encode the selected assignments into JSON on form submit
+    document.querySelector('form').addEventListener('submit', function (e) {
+        const rows = document.querySelectorAll('#selected-employees tbody tr');
+        const result = [];
+
+        let hasError = false;
+
+        rows.forEach(row => {
+            const dateStartInput = row.querySelector('.date-start');
+            const dateEndInput = row.querySelector('.date-end');
+
+            const dateStart = dateStartInput.value;
+            const dateEnd = dateEndInput.value;
+
+            if (new Date(dateEnd) <= new Date(dateStart)) {
+                alert("⚠️ The end date must be later than the start date for employee: " + row.children[0].textContent);
+                hasError = true;
+                return;
+            }
+
+            const assignment = {
+                employeeId: row.dataset.employeeId,
+                role: row.querySelector('.role-select').value,
+                 dateStart: dateStart,
+                dateEnd: dateEnd
+            };
+
+            result.push(assignment);
+        });
+
+        if (hasError) {
+            e.preventDefault(); // Stop form submission
+            return;
+        }
+
+        document.getElementById('assignmentsInput').value = JSON.stringify(result);
+    });
+</script>
+
+
+<!-- Styling -->
+<style>
+    body { background-color: #f8f9fa; }
+    h2, h4 { color: #343a40; }
+    table { border-radius: 10px; overflow: hidden; }
+    td, th { vertical-align: middle !important; text-align: center; }
+    #selected-employees {
+        border: 1px solid #ccc; /* Bordure de 1px de couleur gris clair */
+        border-radius: 5px; /* Coins arrondis pour un meilleur effet visuel */
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Légère ombre pour ajouter de la profondeur */
+    }
+    .container{
+        margin-bottom:30px;
+    }
+    
+</style>
+
+{% endblock %}

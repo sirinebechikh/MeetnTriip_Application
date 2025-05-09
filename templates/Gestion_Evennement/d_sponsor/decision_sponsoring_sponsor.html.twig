@@ -1,55 +1,72 @@
-{% extends 'Gestion_Evennement/base.html.twig' %}
+{% extends 'Gestion_Evennement/d_sponsor/base.html.twig' %}
 
-{% block title %}Demandes de Sponsoring{% endblock %}
+{% block title %}Event Sponsoring{% endblock %}
 
-{% block body %}
- 
+{% block sponsor %}
 <div class="main-panel">
-    <div class="content-wrapper">
-      <div class="page-header">
+  <div class="content-wrapper">
+    <div class="page-header">
+      <h2 class="text-center mb-4"> Event Sponsoring</h2>
+    </div>
+
+    <div class="row">
+      {% if demandes|length > 0 %}
         {% for demande in demandes %}
-        <div class="col-md-6 col-lg-4"> <!-- Responsive grid -->
-            <div class="card mb-4 shadow-sm"> <!-- Ajout de shadow-sm pour un meilleur design -->
-                {% if demande.evenement.imagePath %}
+          <div class="col-md-6 col-lg-4 d-flex"> <!-- Responsive card -->
+            <div class="card shadow-sm border rounded-4 p-3 mb-4 w-100" style="border: 3px solid #e02454;">
+              {# Image de l'événement #}
+              {% if demande.evenement.imagePath %}
                 <img src="{{ asset('uploads/events/' ~ demande.evenement.imagePath) }}" class="card-img-top" alt="Event Image" style="height: 200px; object-fit: cover;">
-                {% else %}
+              {% else %}
                 <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center" style="height: 200px;">
-                    <span class="text-white">No Image</span>
+                  <span class="text-white">Aucune image</span>
                 </div>
+              {% endif %}
+
+              {# Détails de l'événement #}
+              <div class="card-body">
+                <h5 class="card-title">{{ demande.evenement.nom }}</h5>
+                <p class="card-text text-muted">{{ demande.evenement.description|slice(0, 100) ~ (demande.evenement.description|length > 100 ? '...' : '') }}</p>
+
+                <ul class="list-unstyled mb-2">
+                  <li><strong>Type :</strong> {{ demande.evenement.type }}</li>
+                  <li><strong>Lieu :</strong> {{ demande.evenement.lieuEvenement }}</li>
+                  <li><strong>Budget :</strong> {{ demande.evenement.budgetPrevu }} $</li>
+                </ul>
+
+                <p>
+                  <strong>Statut :</strong>
+                  <span class="badge bg-{% if demande.statut == 'Accepted' %}success{% elseif demande.statut == 'Rejected' %}danger{% else %}warning{% endif %}">
+                    {{ demande.statut }}
+                  </span>
+                </p>
+
+                {% if demande.statut == 'Rejected' and demande.justification %}
+                  <p class="text-danger"><strong>Justification :</strong> {{ demande.justification }}</p>
                 {% endif %}
 
-                <div class="card-body">
-                    <h5 class="card-title">{{ demande.evenement.nom }}</h5>
-                    <p class="card-text">{{ demande.evenement.description|slice(0, 100) ~ (demande.evenement.description|length > 100 ? '...' : '') }}</p>
-                    <p><strong>Type:</strong> {{ demande.evenement.type }}</p>
-                    <p><strong>Location:</strong> {{ demande.evenement.lieuEvenement }}</p>
-                    <p><strong>Budget:</strong> {{ demande.evenement.budgetPrevu }} $</p>
+                {# Only show buttons if status is pending #}
+                {% if demande.statut == 'pending' %}
+                <div class="d-flex justify-content-between gap-2 mt-3">
+                  <form action="{{ path('demande_sponsoring_accepter', {'id': demande.id}) }}" method="POST" class="w-50">
+                    <button type="submit" class="btn btn-success btn-sm w-100">Accepter</button>
+                  </form>
 
-                    <p><strong>Statut:</strong> 
-                        <span class="badge bg-{% if demande.statut == 'Accepté' %}success{% elseif demande.statut == 'Refusé' %}danger{% else %}warning{% endif %}">
-                            {{ demande.statut ?: 'En attente' }}
-                        </span>
-                    </p>
-
-                    {% if demande.statut == 'Refusé' and demande.justification %}
-                    <p><strong>Justification:</strong> {{ demande.justification }}</p>
-                    {% endif %}
-
-                    <div class="d-flex justify-content-between mt-3">
-                        <form action="{{ path('demande_sponsoring_accepter', {'id': demande.id}) }}" method="POST">
-                            <button type="submit" class="btn btn-success btn-sm">Accepter</button>
-                        </form>
-
-                        <form action="{{ path('demande_sponsoring_refuser', {'id': demande.id}) }}" method="POST">
-                            <button type="submit" class="btn btn-danger btn-sm">Refuser</button>
-                        </form>
-                    </div>
+                  <form action="{{ path('demande_sponsoring_refuser', {'id': demande.id}) }}" method="POST" class="w-50">
+                    <button type="submit" class="btn btn-danger btn-sm w-100">Refuser</button>
+                  </form>
                 </div>
+                {% endif %}
+              </div>
             </div>
-        </div>
-        {% else %}
-        <p class="text-center">Aucune demande de sponsoring pour l'instant.</p>
+          </div>
         {% endfor %}
+      {% else %}
+        <div class="col-12">
+          <p class="text-center text-muted">Aucune demande de sponsoring pour l'instant.</p>
+        </div>
+      {% endif %}
     </div>
+  </div>
 </div>
 {% endblock %}

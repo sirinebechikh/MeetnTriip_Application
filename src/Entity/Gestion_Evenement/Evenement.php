@@ -1,11 +1,10 @@
 <?php
 
-namespace App\Entity;
-
+namespace App\Entity\Gestion_Evenement;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-
+use App\Entity\gestion_user\User;
 #[ORM\Entity]
 class Evenement
 {
@@ -24,10 +23,10 @@ class Evenement
     private int $nombreInvite;
 
     #[ORM\Column(type: 'datetime', name: 'dateDebut')]
-    private \DateTime $dateDebut;
+private ?\DateTime $dateDebut = null;
 
     #[ORM\Column(type: 'datetime', name: 'dateFin')]
-    private \DateTime $dateFin;
+    private ?\DateTime $dateFin;
 
     #[ORM\Column(type: 'text', name: 'description', nullable: true)]
     private ?string $description;
@@ -47,7 +46,8 @@ class Evenement
    #[ ORM\Column(type:"string", length: 255,name:"validated", nullable:true)]
    
    private ?string $validated ;
-
+   #[ORM\Column(length: 50,name:"eventMood", nullable: true)]
+   private ?string $eventMood = null;
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'evenements')]
     #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: true)]
     private ?User $user;
@@ -55,9 +55,13 @@ class Evenement
     #[ORM\OneToMany(mappedBy: 'event', targetEntity: DemandeSponsoring::class)]
     private Collection $demandesSponsoring;
 
+    #[ORM\OneToMany(mappedBy: 'event', targetEntity: EmployeeEventAssignments::class)]
+    private Collection $employeeAssignments;
+
     public function __construct()
     {
         $this->demandesSponsoring = new ArrayCollection();
+        $this->employeeAssignments = new ArrayCollection();
     }
 
     // Getters and Setters
@@ -68,10 +72,10 @@ class Evenement
     public function setType(string $type): self { $this->type = $type; return $this; }
     public function getNombreInvite(): int { return $this->nombreInvite; }
     public function setNombreInvite(int $nombreInvite): self { $this->nombreInvite = $nombreInvite; return $this; }
-    public function getDateDebut(): \DateTime { return $this->dateDebut; }
-    public function setDateDebut(\DateTime $dateDebut): self { $this->dateDebut = $dateDebut; return $this; }
-    public function getDateFin(): \DateTime { return $this->dateFin; }
-    public function setDateFin(\DateTime $dateFin): self { $this->dateFin = $dateFin; return $this; }
+    public function getDateDebut(): ?\DateTime { return $this->dateDebut; }
+    public function setDateDebut(?\DateTime $dateDebut): self { $this->dateDebut = $dateDebut; return $this; }
+    public function getDateFin(): ?\DateTime { return $this->dateFin; }
+    public function setDateFin(?\DateTime $dateFin): self { $this->dateFin = $dateFin; return $this; }
     public function getDescription(): ?string { return $this->description; }
     public function setDescription(?string $description): self { $this->description = $description; return $this; }
     public function getLieuEvenement(): ?string { return $this->lieuEvenement; }
@@ -82,9 +86,39 @@ class Evenement
     public function setActivities(?string $activities): self { $this->activities = $activities; return $this; }
     public function getImagePath(): ?string { return $this->imagePath; }
     public function setImagePath(?string $imagePath): self { $this->imagePath = $imagePath; return $this; }
-    public function isValidated(): string { return $this->validated; }
-    public function setValidated(string $validated): self { $this->validated = $validated; return $this; }
+    // Keep only one validated property declaration
+    #[ORM\Column(type: 'boolean', nullable: true)]
+
+    
+    // Remove any duplicate methods and keep only these
+    public function isValidated(): ?bool
+    {
+        return $this->validated;
+    }
+    
+    public function setValidated(?bool $validated): self
+    {
+        $this->validated = $validated;
+        return $this;
+    }
     public function getUser(): ?User { return $this->user; }
     public function setUser(?User $user): self { $this->user = $user; return $this; }
     public function getDemandesSponsoring(): Collection { return $this->demandesSponsoring; }
+    
+    public function getEventMood(): ?string
+    {
+        return $this->eventMood;
+    }
+    
+    public function setEventMood(?string $eventMood): self
+    {
+        $this->eventMood = $eventMood;
+        return $this;
+    }
+    
+    // Add this getter
+    public function getEmployeeAssignments(): Collection
+    {
+        return $this->employeeAssignments;
+    }
 }

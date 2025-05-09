@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Repository;
+namespace App\Repository\Gestion_evenement;
 
-use App\Entity\DemandeSponsoring;
+use App\Entity\Gestion_Evenement\DemandeSponsoring;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 

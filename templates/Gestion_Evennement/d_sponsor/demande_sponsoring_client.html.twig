@@ -1,31 +1,65 @@
-{% extends 'Gestion_Evennement/base.html.twig' %}
+{% extends 'Gestion_Evennement/d_sponsor/base.html.twig' %}
 
 {% block title %}Demande de Sponsoring{% endblock %}
 
-{% block body %}
+{% block sponsor %}
 <div class="main-panel">
-    <div class="content-wrapper">
-      <div class="page-header">        <h1 class="mb-4">Faire une demande de sponsoring pour l'événement: {{ evenement.nom }}</h1>
+  <div class="content-wrapper">
 
-        <div class="card">
-            <div class="card-header">
-                <h4>Formulaire de demande de sponsoring</h4>
-            </div>
-            <div class="card-body">
-                {{ form_start(form) }}
-                    <div class="form-group">
-                        {{ form_label(form.sponsor) }}
-                        {{ form_widget(form.sponsor, { 'attr': {'class': 'form-control'} }) }}
-                    </div>
-
-                    <div class="form-group">
-                        {{ form_label(form.justification) }}
-                        {{ form_widget(form.justification, { 'attr': {'class': 'form-control'} }) }}
-                    </div>
-
-                    <button type="submit" class="btn btn-primary">Envoyer la demande</button>
-                {{ form_end(form) }}
-            </div>
-        </div>
+    <div class="page-header d-flex justify-content-between align-items-center mb-4">
+        <h2 class="font-weight-bold" style="padding-left: 35%; font-size: 40px; text-align: center;">Demande de sponsoring</h2>
     </div>
+
+    <div class="row justify-content-center">
+      <div class="col-md-8">
+        <div class="card shadow-lg border-0 rounded-lg">
+          <div class="card-header bg-primary text-white">
+           </div>
+          <div class="card-body">
+ 
+            {{ form_start(form) }}
+ 
+              <div class="form-group mb-3">
+                <h4 >Formulaire de demande pour l'événement : {{ evenement.nom }}</h4>
+
+                {{ form_label(form.sponsor, 'Choisir un sponsor') }}
+                {{ form_widget(form.sponsor, { 'attr': { 'class': 'form-control', 'placeholder': 'Sélectionnez un sponsor' } }) }}
+              </div>
+
+              <div class="form-group mb-4">
+                {{ form_label(form.justification, 'Justification de la demande') }}
+                {{ form_widget(form.justification, { 'attr': { 'class': 'form-control', 'rows': 5, 'placeholder': 'Expliquez pourquoi vous demandez un sponsoring' } }) }}
+              </div>
+
+              <div class="text-end">
+                <button type="submit" class="btn btn-success px-4">Envoyer la demande</button>
+              </div>
+
+            {{ form_end(form) }}
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+ 
+
+<style>.card-header {
+    border-bottom: 1px solid #e0e0e0;
+    font-size: 1.2rem;
+}
+
+.form-control {
+    border-radius: 0.5rem;
+}
+
+.btn-success {
+    border-radius: 0.5rem;
+}
+.main-panel{
+    margin-bottom:50px
+}
+</style>
 {% endblock %}

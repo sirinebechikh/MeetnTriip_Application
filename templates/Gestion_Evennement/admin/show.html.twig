@@ -1,0 +1,55 @@
+{% extends 'Gestion_Evennement/admin/base.html.twig' %}
+
+{% block admin %}
+<div class="container">
+    <h1 class="mb-4">{{ event.nom }} Details</h1>
+
+    <div class="card shadow">
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">Type:</dt>
+                <dd class="col-sm-9">{{ event.type }}</dd>
+
+                <dt class="col-sm-3">Location:</dt>
+                <dd class="col-sm-9">{{ event.lieuEvenement }}</dd>
+
+                <dt class="col-sm-3">Budget:</dt>
+                <dd class="col-sm-9">${{ event.budgetPrevu }}</dd>
+
+                <dt class="col-sm-3">Start Date:</dt>
+                <dd class="col-sm-9">{{ event.dateDebut|date('Y-m-d H:i') }}</dd>
+
+                <dt class="col-sm-3">End Date:</dt>
+                <dd class="col-sm-9">{{ event.dateFin|date('Y-m-d H:i') }}</dd>
+
+                <dt class="col-sm-3">Description:</dt>
+                <dd class="col-sm-9">{{ event.description }}</dd>
+
+                <dt class="col-sm-3">Participants:</dt>
+                <dd class="col-sm-9">{{ event.nombreInvite }}</dd>
+            </dl>
+
+            {% if event.validated is same as(null) %}
+            <div class="d-flex gap-3 mt-4">
+                <form action="{{ path('admin_evenement_accept', {'id': event.id}) }}" method="POST">
+                    <button type="submit" class="btn btn-success btn-lg">
+                        <i class="fas fa-check me-2"></i>Accept
+                    </button>
+                </form>
+                <form action="{{ path('admin_evenement_reject', {'id': event.id}) }}" method="POST">
+                    <button type="submit" class="btn btn-danger btn-lg">
+                        <i class="fas fa-times me-2"></i>Reject
+                    </button>
+                </form>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <a href="{{ path('admin_evenements') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Back to List
+        </a>
+    </div>
+</div>
+{% endblock %}

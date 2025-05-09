@@ -1,9 +1,9 @@
 <?php
- namespace App\Entity;
+ namespace App\Entity\Gestion_Evenement;
 
  use Doctrine\ORM\Mapping as ORM;
- use App\Entity\Evenement;
- use App\Entity\User;
+ use App\Entity\Gestion_Evenement\Evenement;
+ use App\Entity\gestion_user\User;
  
  #[ORM\Entity]
  class DemandeSponsoring

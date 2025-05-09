@@ -11,45 +11,14 @@
 			</button>
 			<div class="collapse navbar-collapse" id="navbarCollapse">
 				<div class="navbar-nav ms-auto py-0">
-                    <a href="{{ path('app_client') }}" class="nav-item nav-link active">Home</a>
                    
+                   
+               
+                              
+                                   
                     <div class="nav-item dropdown">
-                        <a href="#" class="nav-link" data-bs-toggle="dropdown">
-                            <span class="dropdown-toggle">Event</span>
-                        </a>
-                        <div class="dropdown-menu m-0">
-                            <!-- Show "Créer événement" for Admin and Client -->
-                             <a href="{{ path('client_evenements') }}" class="dropdown-item">Manegement_Event</a>
-							   <a href="{{ path('client_evenements_confirmed') }}" class="dropdown-item">Confirmed Events</a>
- 
-						 
-                        </div>
-                    </div>    
-					<div class="nav-item dropdown">
-                        <a href="#" class="nav-link" data-bs-toggle="dropdown">
-                            <span class="dropdown-toggle">Reservation</span>
-                        </a>
-                        <div class="dropdown-menu m-0">
-                            <!-- Show "Créer événement" for Admin and Client -->
-                             
-                             <a href="{{ path('app_evenement_index') }}" class="dropdown-item">Event_Reservation</a>
-                             <a href="{{ path('app_bookings_list') }}" class="dropdown-item"> list of reservation </a>
-         
-						 
-                        </div>
-                    </div>
-					<div class="nav-item dropdown">
-                        <a href="#" class="nav-link" data-bs-toggle="dropdown">
-                            <span class="dropdown-toggle">Payment</span>
-                        </a>
-                        <div class="dropdown-menu m-0">
-                        
-                     {% if app.user %}
-                                <a href="{{ path('bookings_by_user', {'userid': app.user.id}) }}" class="dropdown-item">Payment</a>
-                            {% endif %}
- 
-						 
-                        </div>
+                       
+           
                     </div><div class="nav-item dropdown">
                         <a href="#" class="nav-link" data-bs-toggle="dropdown">
                             <span class="dropdown-toggle">Forum</span>
@@ -73,7 +42,7 @@
 					 
 					</div>
 				</div>
-                 </div>
+              
                  
                 {% if app.user %}
                     <div class="nav-item dropdown">
