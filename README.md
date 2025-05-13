@@ -59,4 +59,4 @@ Meetntreep est une application complète dédiée à la gestion des événements
 
 1. Cloner le projet :
    ```bash
-   git clone https://github.com/nom-utilisateur/meetntreep.git
+   git clone https://github.com/sirinebechikh/meetntreep.git
