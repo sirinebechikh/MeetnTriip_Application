@@ -1,4 +1,4 @@
-# Meetntreep - Plateforme de gestion d’événements d’entreprise
+# Meetntriip - Plateforme de gestion d’événements d’entreprise
 
 Meetntreep est une application complète dédiée à la gestion des événements d’entreprise, intégrant plusieurs modules pour offrir une expérience fluide aux utilisateurs internes et externes.
 
